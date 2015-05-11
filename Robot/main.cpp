@@ -15,12 +15,12 @@ int main() {
 	PlayerClient pc("localhost", 6665);
 	LaserProxy lp(&pc);
 	Position2dProxy pp(&pc);
-	cout << "Anna" << DTOR(40);
+
 	int avoid = 0;
 	int maxPosObs = 0;
 	int minPosObs = 682;
-
 	bool obs;
+
 	pp.SetMotorEnable(true);
 
 	while (true) {
