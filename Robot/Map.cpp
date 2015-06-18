@@ -6,23 +6,6 @@
  */
 
 #include "Map.h"
-#include "pngUtil.h"
-#include "lodepng.h"
-#include <iostream>
-
-using namespace std;
-
-// Colors
-const unsigned char C_BLACK = 0;
-const unsigned char C_GRAY_D = 110;
-const unsigned char C_GRAY_B = 192;
-const unsigned char C_WHITE = 255;
-
-//priorities
-const int P_BLACK = 0;
-const int P_GRAY_D = 1;
-const int P_GRAY_B = 2;
-const int P_WHITE = 3;
 
 Map::Map() {
 	std::vector<unsigned char> map; //the raw pixels
@@ -30,6 +13,8 @@ Map::Map() {
 
 	/******Map**********/
 	unsigned error = lodepng::decode(map, widthMap, heightMap, "/usr/robotics/PcBotWorld/roboticLabMap.png");
+	this->setWidthMap(widthMap);
+	this->setHeightMap(heightMap);
 
 	if (error)
 		std::cout << "decoder error " << error << ": "
@@ -38,8 +23,8 @@ Map::Map() {
 	// Set attributes
 	// TODO Read param
 	this->setNumPixelsToBlow(this->cmToPixel(30)); // TODO Conversion from cm (cfg) to pixels
-	this->setWidthGrid(widthMap / (10 / 2.5));
-	this->setHeightGrid(heightMap / (10 / 2.5));
+	this->setWidthGrid(this->getWidthMap() / (10 / 2.5));
+	this->setHeightGrid(this->getHeightMap() / (10 / 2.5));
 
 	/******Grid*********/
 	this->_grid = new cellGrid*[this->getWidthGrid()];
@@ -48,11 +33,11 @@ Map::Map() {
 		this->_grid[h] = new cellGrid[this->getHeightGrid()];
 	}
 
-	this->mapToGrid(map, this->getGrid(), widthMap, heightMap, this->getWidthGrid(), this->getHeightGrid(), 10);
+	this->mapToGrid(map, this->getGrid(), this->getWidthMap(), this->getHeightMap(), this->getWidthGrid(), this->getHeightGrid(), 10);
 	this->gridToPng("grid.png", this->getGrid(), this->getWidthGrid(), this->getHeightGrid());
 
 	/******Blow*Map*****/
-	blowMap(map, widthMap, heightMap, this->getNumPixelsToBlow(), "roboticLabMapBlow.png");
+	blowMap(map, this->getWidthMap(), this->getHeightMap(), this->getNumPixelsToBlow(), "roboticLabMapBlow.png");
 	this->setWidthBlowGrid(this->getWidthBlowMap() / (10 / 2.5));
 	this->setHeightBlowGrid(this->getHeightBlowMap() / (10 / 2.5));
 
@@ -79,6 +64,14 @@ Map::~Map() {
 		delete [] this->_blowGrid[h];
 	}
 	delete [] this->_blowGrid;
+}
+
+unsigned Map::getWidthMap(){
+	return this->_widthMap;
+}
+
+unsigned Map::getHeightMap(){
+	return this->_heightMap;
 }
 
 unsigned Map::getHeightBlowMap(){
@@ -149,6 +142,14 @@ void Map::setBlowMap(unsigned yStart, unsigned yEnd, unsigned xStart, unsigned x
 			}
 		}
 	}
+}
+
+void Map::setWidthMap(unsigned width){
+	this->_widthMap = width;
+}
+
+void Map::setHeightMap(unsigned height){
+	this->_heightMap = height;
 }
 
 void Map::setWidthGrid(int width){
@@ -257,15 +258,15 @@ int Map::cmToPixel(int cm){
 }
 
 // Calculation grid cell properties
-cellGrid Map::calcGridCell(std::vector<unsigned char> map, int widthMap, int resolution, unsigned yStart, unsigned xStart){
+cellGrid Map::calcGridCell(std::vector<unsigned char> map, int widthMap, int cellCm, unsigned yStart, unsigned xStart){
 	// TODO: calc cm to Pixel
 	cellGrid cell;
 	cell.color = C_WHITE;
 	cell.priority = 0;
 
 	// Calculate the color and priority of the cell
-	for (unsigned y = yStart; y < yStart + this->cmToPixel(resolution); y++){
-		for (unsigned x = xStart; x < xStart + this->cmToPixel(resolution); x++){
+	for (unsigned y = yStart; y < yStart + this->cmToPixel(cellCm); y++){
+		for (unsigned x = xStart; x < xStart + this->cmToPixel(cellCm); x++){
 			if (((map[y * widthMap * 4 + x * 4 + 0] ) == C_BLACK) ||
 				((map[y * widthMap * 4 + x * 4 + 1] ) == C_BLACK) ||
 				((map[y * widthMap * 4 + x * 4 + 2] ) == C_BLACK)){
@@ -309,11 +310,6 @@ void Map::mapToGrid(std::vector<unsigned char> map, cellGrid **grid, unsigned wi
 					// Calculate grid cell
 					grid[yGrid][xGrid] = this->calcGridCell(map, widthMap, resolution, yMapStart, xMapStart);
 					xMapStart += this->cmToPixel(resolution);
-					if (yGrid == 28 && xGrid == 29){
-						cout << "[" << yGrid << "][" << xGrid << "]" << endl;
-						cout << "height Map " << heightMap << " width Map " << widthMap << endl;
-						cout << "Y Map " << yMapStart << " X Map " << xMapStart << endl;
-					}
 				}
 			}
 		}
@@ -341,4 +337,11 @@ void Map::gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int he
 	}
 
 	encodeOneStep(fileName, image, widthGrid, heightGrid);
+}
+
+int Map::xPosToIndex(int xPos){
+	// Get center on the map
+	// Add postion on the map to the center
+	// Div in the resolution
+	return (((this->getHeightMap() / 2) + xPos) / 4); // TODO : Resolution
 }

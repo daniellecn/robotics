@@ -10,6 +10,22 @@
 
 #include <iostream>
 #include <vector>
+#include "pngUtil.h"
+#include "lodepng.h"
+
+using namespace std;
+
+// Colors
+const unsigned char C_BLACK = 0;
+const unsigned char C_GRAY_D = 110;
+const unsigned char C_GRAY_B = 192;
+const unsigned char C_WHITE = 255;
+
+//priorities
+const int P_BLACK = 0;
+const int P_GRAY_D = 1;
+const int P_GRAY_B = 2;
+const int P_WHITE = 3;
 
 struct cellGrid{
 	unsigned char color;
@@ -22,6 +38,8 @@ public:
 	Map();
 	virtual ~Map();
 
+	unsigned 					getWidthMap();
+	unsigned 					getHeightMap();
 	unsigned 					getWidthBlowMap();
 	unsigned 					getHeightBlowMap();
 	int 						getNumPixelsToBlow();
@@ -33,7 +51,12 @@ public:
 	int 					 	getWidthBlowGrid();
 	int 					 	getHeightBlowGrid();
 
+	int							xPosToIndex(int xPos);
+	int							yPosToIndex(int yPos);
+
 private:
+	unsigned					_widthMap;
+	unsigned					_heightMap;
 	unsigned 					_widthBlowMap;
 	unsigned 					_heightBlowMap;
 	unsigned 					_widthGrid;
@@ -46,8 +69,8 @@ private:
 	cellGrid 					**_grid;
 
 
-
-
+	void setWidthMap(unsigned width);
+	void setHeightMap(unsigned height);
 	void setWidthBlowMap(unsigned width);
 	void setHeightBlowMap(unsigned height);
 	void setNumPixelsToBlow(int numPixelsToBlow);
@@ -60,7 +83,7 @@ private:
 
 	void 		initBlowMap();
 	int  		cmToPixel(int cm);
-	cellGrid 	calcGridCell(std::vector<unsigned char> map, int widthMap, int resolution, unsigned yStart, unsigned xStart);
+	cellGrid 	calcGridCell(std::vector<unsigned char> map, int widthMap, int cellCm, unsigned yStart, unsigned xStart);
 	void 		blowMap(std::vector<unsigned char> map, int widthMap, int heightMap, int numPixelsToBlow, const char* blowFileName);
 	void 		mapToGrid(std::vector<unsigned char> map, cellGrid **grid, unsigned widthMap, unsigned heightMap,
 							int widthGrid, int heightGrid, int resolution);
