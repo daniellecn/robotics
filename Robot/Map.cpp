@@ -11,7 +11,7 @@ Map::Map() {
 	std::vector<unsigned char> map; //the raw pixels
 	unsigned widthMap, heightMap;
 
-	/******Map**********/
+	//*****Map*********
 	unsigned error = lodepng::decode(map, widthMap, heightMap, "/usr/robotics/PcBotWorld/roboticLabMap.png");
 	this->setWidthMap(widthMap);
 	this->setHeightMap(heightMap);
@@ -22,34 +22,36 @@ Map::Map() {
 
 	// Set attributes
 	// TODO Read param
-	this->setNumPixelsToBlow(this->cmToPixel(30)); // TODO Conversion from cm (cfg) to pixels
+	this->setNumPixelsToBlow(this->cmToPixel(15)); // TODO Conversion from cm (cfg) to pixels
 	this->setWidthGrid(this->getWidthMap() / (10 / 2.5));
 	this->setHeightGrid(this->getHeightMap() / (10 / 2.5));
 
-	/******Grid*********/
-	this->_grid = new cellGrid*[this->getWidthGrid()];
+	//*****Grid********
+	this->_grid = new cellGrid*[this->getHeightGrid()];
 
-	for (int h = 0; h < this->getWidthGrid(); h++){
-		this->_grid[h] = new cellGrid[this->getHeightGrid()];
+	for (int h = 0; h < this->getHeightGrid(); h++){
+		this->_grid[h] = new cellGrid[this->getWidthGrid()];
 	}
 
 	this->mapToGrid(map, this->getGrid(), this->getWidthMap(), this->getHeightMap(), this->getWidthGrid(), this->getHeightGrid(), 10);
+
 	this->gridToPng("grid.png", this->getGrid(), this->getWidthGrid(), this->getHeightGrid());
 
-	/******Blow*Map*****/
+	//*****Blow*Map****
 	blowMap(map, this->getWidthMap(), this->getHeightMap(), this->getNumPixelsToBlow(), "roboticLabMapBlow.png");
 	this->setWidthBlowGrid(this->getWidthBlowMap() / (10 / 2.5));
 	this->setHeightBlowGrid(this->getHeightBlowMap() / (10 / 2.5));
 
-	/******Blow*Grid****/
-	this->_blowGrid = new cellGrid*[this->getWidthBlowGrid()];
+	//*****Blow*Grid***
+	this->_blowGrid = new cellGrid*[this->getHeightBlowGrid()];
 
-	for (int h = 0; h < this->getWidthBlowGrid(); h++){
-		this->_blowGrid[h] = new cellGrid[this->getHeightBlowGrid()];
+	for (int h = 0; h < this->getHeightBlowGrid(); h++){
+		this->_blowGrid[h] = new cellGrid[this->getWidthBlowGrid()];
 	}
 
 	this->mapToGrid(this->getBlowMap(), this->getBlowGrid(), this->getWidthBlowMap(), this->getHeightBlowMap(),
 			this->getWidthBlowGrid(), this->getHeightBlowGrid(), 10);
+
 	this->gridToPng("blowGrid.png", this->getBlowGrid(), this->getWidthBlowGrid(), this->getHeightBlowGrid());
 	cout << "END" << endl;
 }
@@ -300,7 +302,7 @@ void Map::mapToGrid(std::vector<unsigned char> map, cellGrid **grid, unsigned wi
 		int widthGrid, int heightGrid, int resolution){
 	unsigned yMapStart = 0;
 	unsigned xMapStart = 0;
-	cout << "height " << heightGrid << " width " << widthGrid << endl;
+
 	// Move on the grid
 	for(int yGrid = 0; yGrid <= heightGrid; yGrid++){
 		if (yMapStart + this->cmToPixel(resolution) < heightMap){
@@ -316,6 +318,7 @@ void Map::mapToGrid(std::vector<unsigned char> map, cellGrid **grid, unsigned wi
 		yMapStart += this->cmToPixel(resolution); // TODO param
 		xMapStart = 0;
 	}
+
 }
 
 void Map::gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int heightGrid){
@@ -325,10 +328,13 @@ void Map::gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int he
 	unsigned char color;
 	for (int y = 0; y < heightGrid; y++){
 		for (int x = 0; x < widthGrid; x++) {
-			if (grid[y][x].color == C_BLACK)
+			if (grid[y][x].color == C_BLACK){
 				color = C_BLACK;
-			else
+			}
+			else {
 				color = C_WHITE;
+			}
+
 			image[y * widthGrid * 4 + x * 4 + 0] = color;
 			image[y * widthGrid * 4 + x * 4 + 1] = color;
 			image[y * widthGrid * 4 + x * 4 + 2] = color;
@@ -336,12 +342,70 @@ void Map::gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int he
 		}
 	}
 
+	if (fileName == "blowGrid.png"){
+		// Set start and goal on the map
+		// RED - START
+		int y;
+		int x;
+
+		// START - RED
+		y = this->yPosToIndex(362, this->getHeightBlowGrid());
+		x = this->xPosToIndex(305, this->getWidthBlowGrid());
+
+		x = 90;
+		y = 76;
+
+		image[y * widthGrid * 4 + x * 4 + 0] = 255;
+		image[y * widthGrid * 4 + x * 4 + 1] = 0;
+		image[y * widthGrid * 4 + x * 4 + 2] = 0;
+		image[y * widthGrid * 4 + x * 4 + 3] = 255;
+
+		// GOAL - BLUE
+		y = this->yPosToIndex(169, this->getHeightBlowGrid());
+		x = this->xPosToIndex(138, this->getWidthBlowGrid());
+
+		x = 42;
+		y = 34;
+
+		image[y * widthGrid * 4 + x * 4 + 0] = 0;
+		image[y * widthGrid * 4 + x * 4 + 1] = 0;
+		image[y * widthGrid * 4 + x * 4 + 2] = 255;
+		image[y * widthGrid * 4 + x * 4 + 3] = 255;
+	}
+
 	encodeOneStep(fileName, image, widthGrid, heightGrid);
 }
 
-int Map::xPosToIndex(int xPos){
-	// Get center on the map
-	// Add postion on the map to the center
-	// Div in the resolution
-	return (((this->getHeightMap() / 2) + xPos) / 4); // TODO : Resolution
+int Map::xPosToIndex(int xPosCm, int width){
+	//return ((width / 2) + (xPosCm / 10)); // TODO : Resolution
+	return (xPosCm / 4);
 }
+
+int Map::yPosToIndex(int yPosCm, int height){
+	//return ((height / 2) + (yPosCm / 10)); // TODO : Resolution
+	return (yPosCm / 4);
+}
+
+/*int Map::xPosToIndexLocal(float xPos){
+	int xIndex = ((getWidthGrid() / 2) + (xPos / 10));
+
+	if (xIndex < 0) {
+		xIndex = 0;
+	} else if (xIndex >= getWidthGrid()) {
+		xIndex = getWidthGrid() -1;
+	}
+
+	return xIndex;
+}
+
+int Map::yPosToIndexLocal(float yPos){
+	int yIndex = ((getHeightGrid() / 2) - (yPos / 10));
+
+	if (yIndex < 0) {
+		yIndex = 0;
+	} else if (yIndex >= getHeightGrid()) {
+		yIndex = getHeightGrid() -1;
+	}
+
+	return yIndex;
+}*/
