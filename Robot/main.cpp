@@ -7,65 +7,71 @@
 
 #include <libplayerc++/playerc++.h>
 #include <iostream>
+
+#include "Map.h"
+#include "Robot.h"
+#include "Manager.h"
+
 using namespace std;
 using namespace PlayerCc;
 
 int main() {
 
+	// Read config
+	Position start = {2.10,-2.9,dtor(20)};
+
+	// Init and start classes
+	Map map;
+	Robot robot("localhost",6665, start);
+	//robot.setAddNoise(true);
+	Manager manager(&robot, &map);
+	manager.run();
+
+	// Check real robot code
+/*
 	PlayerClient pc("localhost", 6665);
 	LaserProxy lp(&pc);
 	Position2dProxy pp(&pc);
-
-	int avoid = 0;
-	int maxPosObs = 0;
-	int minPosObs = 682;
-	bool obs;
-
+	float prevX,prevY,prevYaw;
+	float currX,currY,currYaw;
+	float distance = 0;
+	float distanceToStop = 0.3;
 	pp.SetMotorEnable(true);
 
-	while (true) {
+	bool go = true;
+
+	//For fixing Player's reading BUG
+	for(int i=0;i<15;i++)
 		pc.Read();
-		//cout << lp.GetSize() << endl;
-		obs = false;
-		for (uint i = 241; i < 441; i++)
-		{
-		  if(lp[i] < 0.750)
-			obs = true;
-		  	avoid = 15;
 
-		  	if (i > maxPosObs) {
-		  		maxPosObs = i;
-		  	}
-		  	if (i < minPosObs) {
-		  		minPosObs = i;
-		  	}
-		}
+	pc.Read();
+	pp.SetSpeed(0.5, 0.0);
 
-		if (obs && avoid > 0 ) {
-			if (lp.GetMinLeft() < lp.GetMinRight()) {
-				pp.SetSpeed(0.0, -0.6);
-			} else {
-				pp.SetSpeed(0.0, 0.6);
-			}
-			avoid--;
+	prevX = pp.GetXPos();
+	prevY = pp.GetYPos();
+	prevYaw = pp.GetYaw();
+	cout << "x : " << prevX << " y : " << prevY  << " yaw : " << prevYaw << endl;
 
-		} else {
-			avoid = 0;
-			pp.SetSpeed(0.8, 0.0);
-		}
-		/*
-		if (lp[3] < 0.8) {
-			pp.SetSpeed(0.0, 0.3);
-		}
-		else if(lp[1]) {
+	while (go) {
+		pc.Read();
+		currX = pp.GetXPos();
+		currY = pp.GetYPos();
+		currYaw = pp.GetYaw();
+		cout << "x : " << currX << " y : " << currY << " yaw : " << currYaw << endl;
+		distance += sqrt(pow(currX-prevX,2) + pow(currY-prevY,2));
+		cout << "dist : " << distance << endl;
 
+		if (distance >= distanceToStop) {
+			pp.SetSpeed(0.0, 0.0);
+			go = false;
 		}
-		else {
-			pp.SetSpeed(0.8, 0.0);
-		}
-		*/
-	}
+	}*/
 
 	return 0;
 
 }
+
+
+
+
+

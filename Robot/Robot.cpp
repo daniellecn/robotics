@@ -7,7 +7,7 @@
 
 #include "Robot.h"
 
-Robot::Robot(char* ip, int port) {
+Robot::Robot(char* ip, int port,Position startPos) {
 	_pc = new PlayerClient(ip,port);
 	_pp = new Position2dProxy(_pc);
 	_lp = new LaserProxy(_pc);
@@ -17,16 +17,14 @@ Robot::Robot(char* ip, int port) {
 
 	//For fixing Player's reading BUG
 	for(int i=0;i<15;i++)
-		read();
+		_pc->Read();
 
-	_currPos = Position {getXPos(),getYPos(),getYaw()};
+	//_currPos = Position {getXPos(),getYPos(),getYaw()};
+	_pp->SetOdometry(startPos.x,startPos.y,startPos.yaw);
+	_currPos = startPos;
 	_addNoise = false;
+	_lastMoveDelta = Position {0,0,0};
 }
-
-Robot::Robot(char* ip, int port,Position _startPos):Robot(ip,port) {
-	_currPos = _startPos;
-}
-
 
 Robot::~Robot() {
 	delete _pc;
@@ -39,16 +37,24 @@ void Robot::setAddNoise(bool addNoise) {
 	_addNoise = addNoise;
 }
 
-void Robot::read()
-{
+void Robot::read() {
 	_pc->Read();
+}
+
+Position Robot::getLastMoveDelta() {
+
+	return _lastMoveDelta;
+}
+
+Position Robot::getCurrPos() {
+	return _currPos;
 }
 
 void Robot::draw(player_color_t color,player_point_2d_t points[],int count) {
 	_gp->Clear();
 	_gp->Color(color);
 	_gp->DrawPolyline(points,count);
-	_gp->DrawPoints(points,count);
+	//_gp->DrawPoints(points,count);
 	//_gp->DrawPolygon(points,count,true,color);
 }
 
@@ -73,8 +79,12 @@ double Robot::getYaw() {
 	return _pp->GetYaw();
 }
 
-float Robot::getDeltaX(){
-	float x = _pp->GetXPos();
+void Robot::calcDeltas() {
+	_lastMoveDelta = Position {calcDeltaX(),calcDeltaY(), calcDeltaYaw()};
+}
+
+float Robot::calcDeltaX(){
+	float x = getXPos();
 
 	if (_addNoise) {
 		x = x + (rand() % 5);
@@ -87,8 +97,8 @@ float Robot::getDeltaX(){
 	return deltaX;
 }
 
-float Robot::getDeltaY(){
-	float y = _pp->GetYPos();
+float Robot::calcDeltaY(){
+	float y = getYPos();
 
 	if (_addNoise) {
 		y = y + (rand() % 5);
@@ -99,13 +109,14 @@ float Robot::getDeltaY(){
 	return deltaY;
 }
 
-float Robot::getDeltaYaw(){
-	float yaw = _pp->GetYaw();
+float Robot::calcDeltaYaw(){
+	float yaw = getYaw();
 
 	if (_addNoise) {
 		yaw = yaw + ((float)(rand())/(float)(RAND_MAX));
 	}
-
+	// make sure we are still in the 0-2*pi range
+	//yaw = fmod(yaw,2*M_PI);
 	float delYaw = yaw - _currPos.yaw;
 	_currPos.yaw = yaw;
 
@@ -162,10 +173,6 @@ double Robot::getLaser(int index) {
 	}
 
 	return (*_lp)[index];
-}
-
-int Robot::getLaserSampleNum() {
-	return LASER_SAMPLES_NUM;
 }
 
  Location Robot::getObstacleLocation(double distanceFromObs,int sensorIndex) {

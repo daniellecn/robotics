@@ -13,96 +13,101 @@ ParticleManager::ParticleManager() {
 
 	for (int i=0;i < MAX_PARTICLES; i++) {
 		Position pos;
-		pos.x = (double)rand()/(RAND_MAX)*(MAP_HEIGHT)-(MAP_HEIGHT/2);
-		pos.y = (double)rand()/(RAND_MAX)*(MAP_WIDTH)-(MAP_WIDTH/2);
-		pos.yaw = (double)rand()/(RAND_MAX)* 2.0 * M_PI;
+		pos.x = (double)rand()/(RAND_MAX)*(13.75)-(13.75/2);
+		pos.y = (double)rand()/(RAND_MAX)*(9.5)-(9.5/2);
+		int sign = ((rand() % 2) == 0) ? -1 : 1;
+		pos.yaw = (double)rand()/(RAND_MAX)* 2.0 * M_PI * sign;
 
-		Particle newParticle(pos,0);
+		Particle newParticle(pos,1.0);
 		_particleArr.push_back(newParticle);
 	}
-}
-
-ParticleManager::ParticleManager(Position robotStartPos) {
-	Particle newParticle(robotStartPos,1);
-
-	_particleArr.push_back(newParticle);
 }
 
 vector<Particle> ParticleManager::getParticles() {
 	return _particleArr;
 }
 
-void ParticleManager::update(Position deltaPosition,double* laserArr) {
-	int pIndex = 0;
-	int strongestId = NULL;
-	float strongestVal = 0.0;
-	int partCounter = 0;
+void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 
-	vector <Particle> newParticlesVec;
-
+	float maxBelief = 0.0;
+	float totalBelief = 0.0;
+	int count = 0;
+	vector <Particle> particles_new;
 	for (vector<Particle>::iterator curr = _particleArr.begin() ; curr != _particleArr.end() ;++curr) {
-
-		partCounter++;
-
-		curr->update(deltaPosition, laserArr);
-
-		// Saving the strongest particle so we can print it later
-		if (curr->getBelWeight() > strongestVal) {
-			strongestVal = curr->getBelWeight();
-			strongestId = pIndex;
+		count++;
+		curr->update(deltaPosition, laserArr, map);
+		if (curr->getBelWeight() > maxBelief) {
+			maxBelief = curr->getBelWeight();
 		}
-/*		// not keeping weak beliefs
+		totalBelief+=curr->getBelWeight();
+
 		if (curr->getBelWeight() > WEAK_BELIEF) {
-
-			newParticlesVec.push_back(*curr);
-			pIndex++;
-
-			// Saving the strongest particle so we can print it later
-			if (curr->getBelWeight() > strongestVal) {
-				strongestVal = curr->getBelWeight();
-				strongestId = pIndex;
+			particles_new.push_back((*curr));
+			if ((curr->getBelWeight() > STRONG_BELIEF) && (particles_new.size() < MAX_PARTICLES - (_particleArr.size() - count) - 4))	{
+				particles_new.push_back(Particle((*curr)));
+				particles_new.push_back(Particle((*curr)));
+				particles_new.push_back(Particle((*curr)));
+				particles_new.push_back(Particle((*curr)));
 			}
-
-			// strong beliefs are to be evolved
-			if ((curr->getBelWeight() > STRONG_BELIEF) && (newParticlesVec.size() < MAX_PARTICLES - (_particleArr.size() - partCounter) - 2))	{
-
-				Particle childP(curr->getBelPos(),curr->getBelWeight());
-				childP.randomize();
-				newParticlesVec.push_back(childP);
-
-				Particle childP2(curr->getBelPos(),curr->getBelWeight());
-				childP2.randomize();
-				newParticlesVec.push_back(childP2);
-
-				pIndex = pIndex + 2;
-			}
-		}*/
+		}
+	}
+	if(particles_new.size() > 0)	{
+		_particleArr = particles_new;
 	}
 
-	/// RESAMPLE
+	Particle* a;
+	// Normalization
+/*	for (vector<Particle>::iterator curr = _particleArr.begin() ; curr != _particleArr.end() ;++curr) {
+		curr->setBelWeight(curr->getBelWeight()/totalBelief);
+
+		if (curr->getBelWeight() > maxBelief) {
+			maxBelief = curr->getBelWeight();
+			a = &(*curr);
+		}
+
+	}*/
+	//cout << endl;
+	//cout << "maxBelief : " << maxBelief << endl;
+	//cout << "part " << a->getBelPos().x << " " << a->getBelPos().y << " " << a->getBelPos().yaw << endl;
+	//vector <Particle> newParticlesVec;
+
+/*	/// RESAMPLE
 	int index = static_cast<int>((double)rand()/(RAND_MAX) * (_particleArr.size()));
 	double beta = 0.0;
-	vector<Particle> particles_new;
-
+	float totalWX = 0,totalWY = 0,totalX = 0,totalY = 0;
 	for(vector<Particle>::iterator curr = _particleArr.begin(); curr != _particleArr.end(); ++curr) {
-	    beta += ((double)rand()/(RAND_MAX)) * 2.0 * strongestVal;
+	    beta += ((double)rand()/(RAND_MAX)) * 2.0 * maxBelief;
 
 	    while(beta > _particleArr[index].getBelWeight()) {
 	      beta -= _particleArr[index].getBelWeight();
 	      index = (index + 1) % _particleArr.size();
 	    }
 	    particles_new.push_back(_particleArr[index]);
+	    totalWX +=(_particleArr[index].getBelPos().x * _particleArr[index].getBelWeight());
+	    totalWY +=(_particleArr[index].getBelPos().y * _particleArr[index].getBelWeight());
+	    totalX += _particleArr[index].getBelPos().x;
+	    totalY += _particleArr[index].getBelPos().y;
+		//cout << "(" << index << ")[" << _particleArr[index].getBelPos().x << "," << _particleArr[index].getBelPos().y << "," << _particleArr[index].getBelPos().yaw << "]";
+
 	}
+
+	for(vector<Particle>::iterator curr = particles_new.begin(); curr != particles_new.end(); ++curr) {
+
+		//cout << "new parts [" << curr->getBelPos().x << "," << curr->getBelPos().y << "," << curr->getBelPos().yaw << "]";
+
+	}
+	cout << endl;
+	totalWX = floor(totalWX / totalX);
+	totalWY = floor(totalWY / totalY);
+
+	totalX = floor(totalX / _particleArr.size());
+	totalY = floor(totalY / _particleArr.size());
+
+
+    cout << "totalXY [" << totalX << "," << totalY << "]";
+	//cout << endl;
 	_particleArr.clear();
-	_particleArr.assign(particles_new.begin(), particles_new.end());
-}
-
-int ParticleManager::returnCellColInMapByXPos(float x){
-	return (((int)x)/MAP_RESOLUTION + MAP_WIDTH/2) < 0 ? (- ((((int)x)/MAP_RESOLUTION + MAP_WIDTH/2))) : (((int)x)/MAP_RESOLUTION + MAP_WIDTH/2);
-}
-
-int ParticleManager::returnCellRowInMapByYPos(float y){
-	return (MAP_HEIGHT/2 - ((int)y)/MAP_RESOLUTION ) < 0 ? -((MAP_HEIGHT/2 - ((int)y))) : (MAP_HEIGHT/2 - ((int)y)/MAP_RESOLUTION) ;
+	_particleArr.assign(particles_new.begin(), particles_new.end());*/
 }
 
 vector <player_point_2d_t> ParticleManager::getDrawableParticles() {
@@ -110,8 +115,6 @@ vector <player_point_2d_t> ParticleManager::getDrawableParticles() {
 
 	for(vector<Particle>::iterator pd = _particleArr.begin(); pd != _particleArr.end(); ++pd) {
 		player_point_2d_t tmp_pnt;
-		//tmp_pnt.px = returnCellColInMapByXPos(pd->getBelPos().x);
-		//tmp_pnt.py = returnCellRowInMapByYPos(pd->getBelPos().y);
 		tmp_pnt.px = pd->getBelPos().x;
 		tmp_pnt.py = pd->getBelPos().y;
 

@@ -7,39 +7,41 @@
 
 #include "Manager.h"
 
-Manager::Manager(Robot* robot) {
+Manager::Manager(Robot* robot, Map* map) {
 	_robot = robot;
-	Position startPos {_robot->getXPos(),_robot->getYPos(),_robot->getYaw()};
+	_map = map;
 
 	_beh[0] = new TurnRight(_robot);
 	_beh[1] = new TurnLeft(_robot);
 
 	_pm = new ParticleManager();
 }
+
 void Manager::run()
 {
-	player_color_t color;
-	color.red = 255;
-	int ftp = 20,count = 0;
-	double forwardSpeed, turnSpeed, x, y, yaw;
 
+	int count = 0, updates = 0;
+	Position deltas;
 	_robot->read();
+	cout << "Position before move: " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << "," << _robot->getCurrPos().yaw << endl;
 
-	x = _robot->getXPos();
-	y = _robot->getYPos();
-	yaw =_robot->getYaw();
-
-	cout << "Position before any movement: " << x << "," << y << "," << yaw << endl;
-
-	while(true) {
+	while(count < 100) {
 		count++;
-		//pm.update(deltaPos,_robot->getLaserArr());
 
-		if (count == ftp) {
-			_robot->draw(color,&(_pm->getDrawableParticles())[0],_pm->getParticles().size());
-			count = 0;
+		_robot->calcDeltas();
+		deltas = _robot->getLastMoveDelta();
+		//cout << "Delta : " << _robot->getLastMoveDelta().x << "," << _robot->getLastMoveDelta().y<< "," << _robot->getLastMoveDelta().yaw << endl;
+		//cout << "Position : " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << "," << _robot->getCurrPos().yaw << endl;
+
+		if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
+			_pm->update(deltas,_robot->getLaserArr(),_map);
+			updates++;
 		}
-
+		cout << "new parts " << endl;
+		for (vector<Particle>::iterator curr = _pm->getParticles().begin() ; curr != _pm->getParticles().end() ;++curr) {
+			cout << "[" <<(int)curr->getBelPos().x << "," << (int)curr->getBelPos().y << "," << (int)curr->getBelPos().yaw << curr->getBelWeight()<<  "]";
+		}
+		cout << endl;
 		//_robot->wander(&forwardSpeed, &turnSpeed);
 		//_robot->isForwardFree();
 		//set motors
@@ -52,9 +54,43 @@ void Manager::run()
 		} else if (_beh[1]->startCondition()) {
 			_beh[1]->action();
 		}
-
 		_robot->read();
+		_robot->read();
+
 	}
+cout << "update " << updates << endl;
+
+unsigned char col = 30;
+unsigned char col2 = 200;
+unsigned char col3 = 300;
+unsigned char black = 0;
+for (vector<Particle>::iterator curr = _pm->getParticles().begin() ; curr != _pm->getParticles().end() ;++curr) {
+	_map->getGrid()[_map->yPosToIndex(curr->getBelPos().x * 100)][_map->xPosToIndex(curr->getBelPos().y * 100)].color = col;
+}
+_map->getGrid()[_map->yPosToIndex(_robot->getYPos() * 100)][_map->xPosToIndex(_robot->getXPos() * 100)].color = col3;
+_map->getGrid()[_map->yPosToIndex(_robot->getXPos() * 100)][_map->xPosToIndex(_robot->getYPos() * 100)].color = col2;
+cout << _pm->getParticles().size() << endl;
+for (int y = 0; y < _map->getHeightGrid(); y++){
+	for (int x = 0; x < _map->getWidthGrid(); x++) {
+		if (_map->getGrid()[y][x].color == col){
+			cout << "X";
+		}
+		else if (_map->getGrid()[y][x].color == col2) {
+			cout << "M";
+		}
+		else if (_map->getGrid()[y][x].color == col3) {
+				cout << "B";
+		} else if (_map->getGrid()[y][x].color == black) {
+			cout << "*";
+		}
+		else {
+			cout << " ";
+		}
+	}
+	cout << endl;
+}
+
+
 
 /*	while (_curr) {
 		_robot->read();
@@ -76,4 +112,5 @@ void Manager::run()
 
 Manager::~Manager() {
 	delete _pm;
+	//delete _map;
 }

@@ -20,8 +20,9 @@ class Manager {
 	Behavior* _beh[3];
 	Robot* _robot;
 	ParticleManager* _pm;
+	Map*			 _map;
 public:
-	Manager(Robot* robot);
+	Manager(Robot* robot, Map* map);
 	void run();
 	virtual ~Manager();
 };
