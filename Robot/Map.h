@@ -30,6 +30,7 @@ const int P_WHITE = 3;
 struct cellGrid{
 	unsigned char color;
 	int priority;
+	int g = 0;
 };
 
 class Map {
@@ -51,8 +52,10 @@ public:
 	int 					 	getWidthBlowGrid();
 	int 					 	getHeightBlowGrid();
 
-	int							xPosToIndex(int xPos);
-	int							yPosToIndex(int yPos);
+	int							xPosToIndex(int xPosCm, int width);
+	int							yPosToIndex(int yPosCm, int height);
+	int 						xPosToIndexLocal(float xPos);
+	int 						yPosToIndexLocal(float xPos);
 
 private:
 	unsigned					_widthMap;
@@ -87,7 +90,7 @@ private:
 	void 		blowMap(std::vector<unsigned char> map, int widthMap, int heightMap, int numPixelsToBlow, const char* blowFileName);
 	void 		mapToGrid(std::vector<unsigned char> map, cellGrid **grid, unsigned widthMap, unsigned heightMap,
 							int widthGrid, int heightGrid, int resolution);
-	static void gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int heightGrid);
+	void gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int heightGrid);
 };
 
 #endif /* MAP_H_ */
