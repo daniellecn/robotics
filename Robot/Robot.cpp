@@ -123,6 +123,11 @@ float Robot::calcDeltaYaw(){
 	return delYaw;
 }
 
+
+bool Robot::isLeftMoreFree() {
+	return ((*_lp).GetMinLeft() > (*_lp).GetMinRight());
+}
+
 bool Robot::isRightFree() {
 	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(50)] > 0.5)
 		return true;
@@ -150,12 +155,13 @@ bool Robot::isForwardFree() {
 	bool isObs  = false;
 
 	for (int i = FORWARD_LASER_INDEX - (angleLaserAddition/2);
-			 i < FORWARD_LASER_INDEX + (angleLaserAddition/2);
+			 (i < FORWARD_LASER_INDEX + (angleLaserAddition/2));
 			 i += LASER_READ_JUMP) {
 		if ((*_lp)[i] < OBSTABLE_MIN_DIST) {
 			isObs = true;
 		}
 	}
+
 	if (!isObs)
 		return true;
 	else
@@ -173,15 +179,6 @@ double Robot::getLaser(int index) {
 	}
 
 	return (*_lp)[index];
-}
-
- Location Robot::getObstacleLocation(double distanceFromObs,int sensorIndex) {
-	Location obsLocation;
-
-	obsLocation.x = getXPos() + distanceFromObs*cos(getYaw() + LASER_INDEX_TO_ANGLE_DEG(sensorIndex));
-	obsLocation.y = getYPos() + distanceFromObs*sin(getYaw() + LASER_INDEX_TO_ANGLE_DEG(sensorIndex));
-
-	return obsLocation;
 }
 
  void Robot::wander(double* forwardSpeed,double* turnSpeed) {

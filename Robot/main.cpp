@@ -24,7 +24,8 @@ int main() {
 	Map map;
 	Robot robot("localhost",6665, start);
 	//robot.setAddNoise(true);
-	Manager manager(&robot, &map);
+	PlnObstacleAvoid plan(&robot);
+	Manager manager(&robot, &map, &plan);
 	manager.run();
 
 	// Check real robot code

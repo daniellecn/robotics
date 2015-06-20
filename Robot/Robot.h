@@ -64,6 +64,7 @@ public:
 	bool isRightFree();
 	bool isLeftFree();
 	bool isForwardFree();
+	bool isLeftMoreFree();
 	Location getObstacleLocation(double distanceFromObs,int sensorIndex);
 
 };

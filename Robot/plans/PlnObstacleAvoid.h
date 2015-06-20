@@ -9,18 +9,16 @@
 #define PLNOBSTACLEAVOID_H_
 
 #include "Plan.h"
-#include "../Robot.h"
+
 #include "../behaviors/TurnRight.h"
-//#include "../behaviors/B.h"
-//#include "../behaviors/C.h"
+#include "../behaviors/TurnLeft.h"
+#include "../behaviors/GoForward.h"
+#include "../behaviors/TurnAround.h"
 
 class PlnObstacleAvoid: public Plan {
-	Behavior* _beh[3];
-	Behavior* _start;
-
 public:
 	PlnObstacleAvoid(Robot* robot);
-	Behavior* getStartPoint(){return _start;}
+	Behavior* getStartPoint();
 	virtual ~PlnObstacleAvoid();
 };
 

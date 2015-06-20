@@ -8,9 +8,8 @@
 #include "TurnRight.h"
 
 TurnRight::TurnRight(Robot* robot):Behavior(robot) {
-	// TODO Auto-generated constructor stub
-
 }
+
 bool TurnRight::startCondition()
 {
 	if(_robot->isRightFree() )
@@ -18,6 +17,7 @@ bool TurnRight::startCondition()
 	else
 		return false;
 }
+
 bool TurnRight::stopCondition()
 {
 	if(_robot->isForwardFree())
@@ -30,6 +30,6 @@ void TurnRight::action()
 {
 	_robot->setSpeed(0.0, 0.3);
 }
+
 TurnRight::~TurnRight() {
-	// TODO Auto-generated destructor stub
 }

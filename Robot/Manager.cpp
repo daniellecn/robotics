@@ -7,12 +7,11 @@
 
 #include "Manager.h"
 
-Manager::Manager(Robot* robot, Map* map) {
+Manager::Manager(Robot* robot, Map* map, Plan* plan) {
 	_robot = robot;
 	_map = map;
-
-	_beh[0] = new TurnRight(_robot);
-	_beh[1] = new TurnLeft(_robot);
+	_plan = plan;
+	_curr = plan->getStartPoint();
 
 	_pm = new ParticleManager();
 }
@@ -22,41 +21,49 @@ void Manager::run()
 
 	int count = 0, updates = 0;
 	Position deltas;
-	_robot->read();
 	cout << "Position before move: " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << "," << _robot->getCurrPos().yaw << endl;
+	// Perform the first behavior of the plan
+	if (_curr->startCondition() == false)
+		_curr = _curr->selectNext();
+	_curr->action();
 
 	while(count < 100) {
 		count++;
+		_robot->read();
 
-		_robot->calcDeltas();
-		deltas = _robot->getLastMoveDelta();
+		while(!(_curr->stopCondition()))
+		{
+			_curr->action();
+			_robot->calcDeltas();
+			deltas = _robot->getLastMoveDelta();
+			if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
+				//_pm->update(deltas,_robot->getLaserArr(),_map);
+				updates++;
+			}
+
+			_robot->read();
+			_robot->read();
+		}
+		// Perform the next behavior according to the plan
+		_curr = _curr->selectNext();
+		if (!_curr)
+			break;
+
+
+
 		//cout << "Delta : " << _robot->getLastMoveDelta().x << "," << _robot->getLastMoveDelta().y<< "," << _robot->getLastMoveDelta().yaw << endl;
 		//cout << "Position : " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << "," << _robot->getCurrPos().yaw << endl;
 
-		if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
-			_pm->update(deltas,_robot->getLaserArr(),_map);
-			updates++;
-		}
-		cout << "new parts " << endl;
+
+/*		cout << "new parts " << endl;
 		for (vector<Particle>::iterator curr = _pm->getParticles().begin() ; curr != _pm->getParticles().end() ;++curr) {
 			cout << "[" <<(int)curr->getBelPos().x << "," << (int)curr->getBelPos().y << "," << (int)curr->getBelPos().yaw << curr->getBelWeight()<<  "]";
 		}
-		cout << endl;
+		cout << endl;*/
 		//_robot->wander(&forwardSpeed, &turnSpeed);
 		//_robot->isForwardFree();
 		//set motors
 		//_robot->setSpeed(forwardSpeed, dtor(turnSpeed));
-
-		if (_robot->isForwardFree()) {
-			_robot->setSpeed(0.7,0.0);
-		} else if (_beh[0]->startCondition() ){
-			_beh[0]->action();
-		} else if (_beh[1]->startCondition()) {
-			_beh[1]->action();
-		}
-		_robot->read();
-		_robot->read();
-
 	}
 cout << "update " << updates << endl;
 
@@ -65,22 +72,22 @@ unsigned char col2 = 200;
 unsigned char col3 = 300;
 unsigned char black = 0;
 for (vector<Particle>::iterator curr = _pm->getParticles().begin() ; curr != _pm->getParticles().end() ;++curr) {
-	_map->getGrid()[_map->yPosToIndex(curr->getBelPos().x * 100)][_map->xPosToIndex(curr->getBelPos().y * 100)].color = col;
+	_map->getGrid()[_map->xPosToIndex(curr->getBelPos().x * 100)][_map->yPosToIndex(curr->getBelPos().y * 100)].color = col;
 }
-_map->getGrid()[_map->yPosToIndex(_robot->getYPos() * 100)][_map->xPosToIndex(_robot->getXPos() * 100)].color = col3;
-_map->getGrid()[_map->yPosToIndex(_robot->getXPos() * 100)][_map->xPosToIndex(_robot->getYPos() * 100)].color = col2;
+_map->getGrid()[_map->xPosToIndex(_robot->getXPos() * 100)][_map->yPosToIndex(_robot->getYPos() * 100)].color = col3;
+_map->getGrid()[_map->xPosToIndex(_robot->getXPos() * 100)][_map->yPosToIndex(_robot->getYPos() * 100)].color = col2;
 cout << _pm->getParticles().size() << endl;
-for (int y = 0; y < _map->getHeightGrid(); y++){
-	for (int x = 0; x < _map->getWidthGrid(); x++) {
-		if (_map->getGrid()[y][x].color == col){
+for (int y = 0; y < _map->getWidthGrid(); y++){
+	for (int x = 0; x < _map->getHeightGrid(); x++) {
+		if (_map->getGrid()[x][y].color == col){
 			cout << "X";
 		}
-		else if (_map->getGrid()[y][x].color == col2) {
+		else if (_map->getGrid()[x][y].color == col2) {
 			cout << "M";
 		}
-		else if (_map->getGrid()[y][x].color == col3) {
+		else if (_map->getGrid()[x][y].color == col3) {
 				cout << "B";
-		} else if (_map->getGrid()[y][x].color == black) {
+		} else if (_map->getGrid()[x][y].color == black) {
 			cout << "*";
 		}
 		else {
@@ -92,22 +99,7 @@ for (int y = 0; y < _map->getHeightGrid(); y++){
 
 
 
-/*	while (_curr) {
-		_robot->read();
-		if(!(_curr->startCondition()))
-			return;
-		_curr->action();
-		while(_curr !=NULL)
-		{
-			while(_curr->stopCondition() == false)
-			{
-				_curr->action();
-				_robot->read();
-			}
-			_curr = _curr->selectNext();
-			_robot->read();
-		}
-	}*/
+
 }
 
 Manager::~Manager() {

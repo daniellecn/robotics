@@ -12,17 +12,13 @@
 #include "Location.h"
 using namespace std;
 
-namespace PlayerCc {
-
 class WaypointManager {
-	static const int WAYPOINT_REACH_RADIUS = 5;
+	static const float WAYPOINT_REACH_RADIUS = 1;
 
 	vector <Location> _waypointPool;
 public:
 	WaypointManager();
 	virtual ~WaypointManager();
 };
-
-} /* namespace PlayerCc */
 
 #endif /* WAYPOINTMANAGER_H_ */
