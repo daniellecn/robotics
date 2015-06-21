@@ -19,6 +19,7 @@ using namespace std;
 const unsigned char C_BLACK = 0;
 const unsigned char C_GRAY_D = 110;
 const unsigned char C_GRAY_B = 192;
+const unsigned char C_GREEN = 5;
 const unsigned char C_WHITE = 255;
 
 //priorities
@@ -31,6 +32,10 @@ struct cellGrid{
 	unsigned char color;
 	int priority;
 	int g = 0;
+	int h;
+	int expandOrder;
+	bool closed = false;
+	int dirArrival;
 };
 
 class Map {
@@ -57,6 +62,7 @@ public:
 	int 						xPosToIndexLocal(float xPos);
 	int 						yPosToIndexLocal(float xPos);
 
+	void gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int heightGrid);
 private:
 	unsigned					_widthMap;
 	unsigned					_heightMap;
@@ -90,7 +96,7 @@ private:
 	void 		blowMap(std::vector<unsigned char> map, int widthMap, int heightMap, int numPixelsToBlow, const char* blowFileName);
 	void 		mapToGrid(std::vector<unsigned char> map, cellGrid **grid, unsigned widthMap, unsigned heightMap,
 							int widthGrid, int heightGrid, int resolution);
-	void gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int heightGrid);
+
 };
 
 #endif /* MAP_H_ */
