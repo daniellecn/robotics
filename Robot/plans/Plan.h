@@ -12,10 +12,12 @@
 class Plan {
 
 protected:
+	Behavior** _behArr;
 	Behavior* _start;
+	Robot* _robot;
 public:
 	Plan(Robot* robot);
-	virtual Behavior* getStartPoint(){return _start;}
+	virtual Behavior* getStartPoint() = 0;
 	virtual ~Plan();
 };
 

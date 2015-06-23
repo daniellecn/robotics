@@ -7,12 +7,12 @@
 
 #ifndef BEHAVIOR_H_
 #define BEHAVIOR_H_
-#include <vector>
 #include "../Robot.h"
 using namespace std;
 
 class Behavior {
-	vector<Behavior*> _behVect;
+	Behavior** _behArr;
+	int _size;
 protected:
 	Robot* _robot;
 public:
@@ -21,17 +21,8 @@ public:
 	virtual bool startCondition() = 0;
 	virtual bool stopCondition() = 0;
 	virtual void action() = 0;
-	void addBeh(Behavior* next)
-	{
-		_behVect.push_back(next);
-	}
-	Behavior* selectNext()
-	{
-		//Run over vector and return first true
-		//startCond of the first behavior
-		return NULL;
-	}
-
+	void addNext(Behavior* next);
+	Behavior* selectNext();
 };
 
 #endif /* BEHAVIOR_H_ */

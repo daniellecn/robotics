@@ -7,19 +7,18 @@
 
 #include "TurnLeft.h"
 
-namespace PlayerCc {
-
 TurnLeft::TurnLeft(Robot* robot):Behavior(robot) {
-	// TODO Auto-generated constructor stub
-
 }
+
 bool TurnLeft::startCondition()
 {
-	if(_robot->isLeftFree() )
+	// && _robot->isLeftMoreFree()
+	if(_robot->isLeftFree())
 		return true;
 	else
 		return false;
 }
+
 bool TurnLeft::stopCondition()
 {
 	if(_robot->isForwardFree())
@@ -27,12 +26,11 @@ bool TurnLeft::stopCondition()
 			else
 				return false;
 }
+
 void TurnLeft::action()
 {
-	_robot->setSpeed(0.0, -0.3);
-}
-TurnLeft::~TurnLeft() {
-	// TODO Auto-generated destructor stub
+	_robot->setSpeed(0.2, -0.3);
 }
 
-} /* namespace PlayerCc */
+TurnLeft::~TurnLeft() {
+}
