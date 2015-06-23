@@ -20,7 +20,11 @@ static inline int LASER_ANGLE_TO_INDEX_DEG(float degree) {
 }
 
 static inline float LASER_INDEX_TO_ANGLE_DEG(int index) {
-	return ((double)(index*LASER_ANGULAR_RESOLUTION_DEG+LASER_MIN_ANGLE_DEG));
+	return ((float)(index*LASER_ANGULAR_RESOLUTION_DEG+LASER_MIN_ANGLE_DEG));
+}
+
+static inline float LASER_INDEX_TO_ANGLE_RAD(int index) {
+	return ((float)(index*LASER_ANGULAR_RESOLUTION_DEG+LASER_MIN_ANGLE_DEG)* M_PI / 180);
 }
 
 #endif /* LASER_H_ */

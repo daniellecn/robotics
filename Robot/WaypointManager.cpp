@@ -7,7 +7,6 @@
 
 #include "WaypointManager.h"
 
-namespace PlayerCc {
 
 WaypointManager::WaypointManager() {
 	// TODO Auto-generated constructor stub
@@ -18,4 +17,3 @@ WaypointManager::~WaypointManager() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace PlayerCc */

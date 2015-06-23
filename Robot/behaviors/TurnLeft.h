@@ -8,7 +8,6 @@
 #ifndef TURNLEFT_H_
 #define TURNLEFT_H_
 #include "Behavior.h"
-namespace PlayerCc {
 
 class TurnLeft : public Behavior {
 public:
@@ -18,7 +17,5 @@ public:
 	void action();
 	virtual ~TurnLeft();
 };
-
-} /* namespace PlayerCc */
 
 #endif /* TURNLEFT_H_ */

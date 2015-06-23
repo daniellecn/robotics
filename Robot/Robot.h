@@ -25,6 +25,8 @@ class Robot {
 	Graphics2dProxy* _gp;
 
 	Position _currPos;
+	Position _lastMoveDelta;
+
 	double _laserArr[LASER_SAMPLES_NUM];
 	bool _addNoise;
 
@@ -33,20 +35,23 @@ class Robot {
 	static const float   X_SIZE_METER 		= 0.35;
 	static const float   Y_SIZE_METER 		= 0.45;
 	static const int 	LASER_READ_JUMP = 1;
+
+	float calcDeltaX();
+	float calcDeltaY();
+	float calcDeltaYaw();
 public:
-	Robot(char* ip, int port);
+	//Robot(char* ip, int port);
 	Robot(char* ip, int port,Position startPos);
 	virtual ~Robot();
 
 	double getXPos();
 	double getYPos();
 	double getYaw();
-	float getDeltaX();
-	float getDeltaY();
-	float getDeltaYaw();
+	void calcDeltas() ;
+	Position getLastMoveDelta();
+	Position getCurrPos();
 	double getLaser(int index);
 	double* getLaserArr();
-	int    getLaserSampleNum();
 
 	void setAddNoise(bool addNoise);
 
@@ -59,6 +64,7 @@ public:
 	bool isRightFree();
 	bool isLeftFree();
 	bool isForwardFree();
+	bool isLeftMoreFree();
 	Location getObstacleLocation(double distanceFromObs,int sensorIndex);
 
 };
