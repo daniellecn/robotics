@@ -7,14 +7,17 @@
 
 #ifndef PLAN_H_
 #define PLAN_H_
+
 #include "../behaviors/Behavior.h"
 #include "../Robot.h"
+
 class Plan {
 
 protected:
-	Behavior** _behArr;
-	Behavior* _start;
-	Robot* _robot;
+	Behavior** 	_behArr;
+	Behavior* 	_start;
+	Robot* 		_robot;
+
 public:
 	Plan(Robot* robot);
 	virtual Behavior* getStartPoint() = 0;

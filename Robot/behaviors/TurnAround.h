@@ -11,13 +11,14 @@
 #include "Behavior.h"
 
 class TurnAround: public Behavior {
+
 public:
 	TurnAround(Robot* robot);
+	virtual ~TurnAround();
+
 	bool startCondition();
 	bool stopCondition();
 	void action();
-	virtual ~TurnAround();
 };
-
 
 #endif /* TURNAROUND_H_ */

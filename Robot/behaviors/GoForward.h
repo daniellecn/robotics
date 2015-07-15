@@ -11,12 +11,14 @@
 #include "Behavior.h"
 
 class GoForward: public Behavior {
+
 public:
 	GoForward(Robot* robot);
+	virtual ~GoForward();
+
 	bool startCondition();
 	bool stopCondition();
 	void action();
-	virtual ~GoForward();
 };
 
 #endif /* GOFORWARD_H_ */
