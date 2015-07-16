@@ -22,16 +22,14 @@ const char* GeneralService::PNG_BLOW_GRID = "blowGrid.png";
 
 // Colors
 const unsigned char GeneralService::C_BLACK = 0;
-const unsigned char GeneralService::C_GRAY_D = 110;
-const unsigned char GeneralService::C_GRAY_B = 192;
+const unsigned char GeneralService::C_GRAY = 176;
 const unsigned char GeneralService::C_GREEN = 250;
 const unsigned char GeneralService::C_WHITE = 255;
 const unsigned char GeneralService::C_PURPLE = 127;
-const unsigned char GeneralService::C_RED = 252;
-const unsigned char GeneralService::C_BLUE = 252;
+const unsigned char GeneralService::C_RED = 245;
+const unsigned char GeneralService::C_BLUE = 20;
 
 //priorities
-const int GeneralService::P_BLACK = 0;
-const int GeneralService::P_GRAY_D = 1;
-const int GeneralService::P_GRAY_B = 2;
-const int GeneralService::P_WHITE = 3;
+const int GeneralService::P_WHITE = 1;
+const int GeneralService::P_GRAY = 2;
+const int GeneralService::P_BLACK = 3;

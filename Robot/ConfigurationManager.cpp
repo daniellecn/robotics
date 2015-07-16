@@ -125,10 +125,9 @@ float ConfigurationManager::getMapResolutionCM(){
 	int found;
 
 	if (ConfigurationManager::_mapResolutionCM == 0){
-		data = ConfigurationManager::getParameter(GeneralService::P_ROBOT_SIZE);
+		data = ConfigurationManager::getParameter(GeneralService::P_MAP_RESOLUTION);
 
-		found = data.find(' ');
-		ConfigurationManager::_mapResolutionCM = atoi(data.substr(0, found).c_str());
+		ConfigurationManager::_mapResolutionCM = atof(data.c_str());
 	}
 
 	return ConfigurationManager::_mapResolutionCM;
@@ -139,10 +138,10 @@ float ConfigurationManager::getGridResolutionCM(){
 	int found;
 
 	if (ConfigurationManager::_gridResolutionCM == 0){
-		data = ConfigurationManager::getParameter(GeneralService::P_ROBOT_SIZE);
+		data = ConfigurationManager::getParameter(GeneralService::P_GRID_RESOLUTION);
 
 		found = data.find(' ');
-		ConfigurationManager::_gridResolutionCM = atoi(data.substr(0, found).c_str());
+		ConfigurationManager::_gridResolutionCM = atof(data.substr(0, found).c_str());
 	}
 
 	return ConfigurationManager::_gridResolutionCM;

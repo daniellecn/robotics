@@ -8,52 +8,58 @@
 #ifndef PATHPLANNER_H_
 #define PATHPLANNER_H_
 
+#include "GeneralService.h"
 #include "Map.h"
 #include <list>
 using namespace std;
 
-struct location{
-	int x;
-	int y;
-};
-
-struct Acell{
-	int g;
-	int f;
-	location currLoc;
-};
-
 enum DIR{
 	UP = 0,
-	LEFT,
-	DOWN,
+	UP_RIGHT,
 	RIGHT,
+	RIGHT_DOWN,
+	DOWN,
+	DOWN_LEFT,
+	LEFT,
+	LEFT_UP,
 };
-
-//namespace std {
 
 class PathPlanner {
 private:
-	const location DIR_VEC[4] = {{0, 1}, {-1, 0}, {0, -1}, {1, 0}};
+	const location DIR_VEC[8] = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1,1}, {-1, 0}, {-1, -1}};
 
 	Map* _map;
 	Acell _start;
 	Acell _goal;
 	cellGrid **_grid;
-	int _cost = 1;
-	Acell calcCell(DIR dir, Acell currCell);
+	vector <location> _wayPoints;
+
+	void setStartIndex(int y, int x, int g, int f);
+	void setGoalIndex(int y, int x, int g, int f);
+	void setGrid(cellGrid** grid);
+	void setMap(Map* map);
+	void setWayPoint(location wayPoint);
+
+	void calcHeuristicFunction();
+	void calcPriorities();
+
 	bool isExistListByLoc(list<Acell>::iterator it1, list<Acell>::iterator it2, location loc);
-	void checkGValue(Map* map);
-	vector <location> plan();
-	void calcHeuristicFunction(Map* map);
+	void plan();
+
 
 public:
 	PathPlanner(Map* map, int xStart, int yStart, int xGoal, int yGoal);
 	virtual ~PathPlanner();
-	void search(Map* map);
+
+	Acell getStartIndex();
+	Acell getGoalIndex();
+	cellGrid** getGrid();
+	Map* getMap();
+	vector <location> getWayPoints();
+
+	void search();
+
 
 };
-
-//} /* namespace std */
 
 #endif /* PATHPLANNER_H_ */

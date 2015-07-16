@@ -8,39 +8,15 @@
 #ifndef MAP_H_
 #define MAP_H_
 
-#include <iostream>
-#include <vector>
+#include "GeneralService.h"
+#include "ConfigurationManager.h"
 #include "pngUtil.h"
 #include "lodepng.h"
 
 using namespace std;
 
-// Colors
-const unsigned char C_BLACK = 0;
-const unsigned char C_GRAY_D = 110;
-const unsigned char C_GRAY_B = 192;
-const unsigned char C_GREEN = 5;
-const unsigned char C_WHITE = 255;
-
-//priorities
-const int P_BLACK = 0;
-const int P_GRAY_D = 1;
-const int P_GRAY_B = 2;
-const int P_WHITE = 3;
-
-struct cellGrid{
-	unsigned char color;
-	int priority;
-	int g = 0;
-	int h;
-	int expandOrder;
-	bool closed = false;
-	int dirArrival;
-};
-
 class Map {
 public:
-
 	Map();
 	virtual ~Map();
 
@@ -57,12 +33,14 @@ public:
 	int 					 	getWidthBlowGrid();
 	int 					 	getHeightBlowGrid();
 
-	int							xPosToIndex(int xPosCm, int width);
-	int							yPosToIndex(int yPosCm, int height);
+	int							xPosToIndex(int xPosCm);
+	int							yPosToIndex(int yPosCm);
 	int 						xPosToIndexLocal(float xPos);
 	int 						yPosToIndexLocal(float xPos);
 
+	void changePixelColor(vector<unsigned char>* map, int widthMap, int y, int x, unsigned char color);
 	void gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int heightGrid);
+
 private:
 	unsigned					_widthMap;
 	unsigned					_heightMap;
@@ -92,9 +70,8 @@ private:
 
 	void 		initBlowMap();
 	int  		cmToPixel(int cm);
-	cellGrid 	calcGridCell(std::vector<unsigned char> map, int widthMap, int cellCm, unsigned yStart, unsigned xStart);
-	void 		blowMap(std::vector<unsigned char> map, int widthMap, int heightMap, int numPixelsToBlow, const char* blowFileName);
-	void 		mapToGrid(std::vector<unsigned char> map, cellGrid **grid, unsigned widthMap, unsigned heightMap,
+	void 		blowMap(vector<unsigned char> map, int widthMap, int heightMap, int numPixelsToBlow, const char* blowFileName);
+	void 		mapToGrid(vector<unsigned char> map, cellGrid **grid, unsigned widthMap, unsigned heightMap,
 							int widthGrid, int heightGrid, int resolution);
 
 };

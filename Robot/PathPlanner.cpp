@@ -8,40 +8,69 @@
 #include "PathPlanner.h"
 
 PathPlanner::PathPlanner(Map* map, int xStart, int yStart, int xGoal, int yGoal) {
-	// TODO Auto-generated constructor stub
-	_map = map;
-	location loc;
-	Acell cell;
-	this->_grid = map->getBlowGrid();
-	this->_cost = 0;
+	// Set attributes
+	this->setMap(map);
+	this->setGrid(map->getBlowGrid());
+	this->setStartIndex(yStart, xStart, 0, 0);
+	this->setGoalIndex(yGoal, xGoal, 0, 0);
 
-	loc.x = xStart;
-	loc.y = yStart;
-	cell.currLoc = loc;
-	cell.f = this->_cost;
-	this->_start = cell;
-
-	loc.x = xGoal;
-	loc.y = yGoal;
-	cell.currLoc = loc;
-	cell.f = this->_cost;
-	this->_goal = cell;
-
-
-	this->calcHeuristicFunction(map);
-	cout << "before search" << endl;
-	this->search(map);
-
-	cout << "end search" << endl;
-	//this->checkGValue(map);
+	// Calculations
+	this->calcHeuristicFunction();
+	this->calcPriorities();
+	this->search();
 }
 
 PathPlanner::~PathPlanner() {
-	// TODO Auto-generated destructor stub
 	for (int h = 0; h < _map->getWidthBlowGrid(); h++){
 		delete [] this->_grid[h];
 	}
 	delete [] this->_grid;
+}
+
+void PathPlanner::setStartIndex(int y, int x, int g, int f){
+	this->_start.currLoc.y = y;
+	this->_start.currLoc.x = x;
+	this->_start.g = g;
+	this->_start.f = f;
+}
+
+void PathPlanner::setGoalIndex(int y, int x, int g, int f){
+	this->_goal.currLoc.y = y;
+	this->_goal.currLoc.x = x;
+	this->_goal.g = g;
+	this->_goal.f = f;
+}
+
+void PathPlanner::setGrid(cellGrid** grid){
+	this->_grid = grid;
+}
+
+void PathPlanner::setMap(Map* map){
+	this->_map = map;
+}
+
+void PathPlanner::setWayPoint(location wayPoint){
+	this->_wayPoints.push_back(wayPoint);
+}
+
+Acell PathPlanner::getStartIndex(){
+	return this->_start;
+}
+
+Acell PathPlanner::getGoalIndex(){
+	return this->_goal;
+}
+
+cellGrid** PathPlanner::getGrid(){
+	return this->_grid;
+}
+
+Map* PathPlanner::getMap(){
+	return this->_map;
+}
+
+vector <location> PathPlanner::getWayPoints(){
+	return this->_wayPoints;
 }
 
 bool compare(const Acell& first, const Acell& second){
@@ -51,7 +80,7 @@ bool compare(const Acell& first, const Acell& second){
     return false;
 }
 
-void PathPlanner::search(Map* map){
+void PathPlanner::search(){
 
 	list<Acell> openCells;
 	list<Acell> closeCells;
@@ -60,16 +89,21 @@ void PathPlanner::search(Map* map){
 	bool found = false; 	// Flag that is set when search complete
 	bool resign = false;	// Flag set if we can't find expand
 	int counter = 0;
+	int cost = 0;
 
+	// Insert start cell
 	it = openCells.begin();
 	openCells.insert(it, this->_start);
 
-	this->_grid[this->_start.currLoc.y][this->_start.currLoc.x].g = this->_cost;
-	this->_grid[this->_start.currLoc.y][this->_start.currLoc.x].expandOrder = counter;
-	this->_grid[this->_start.currLoc.y][this->_start.currLoc.x].dirArrival = 0;
-	this->_cost++;
+	// Set the start index cell
+	this->getGrid()[this->getStartIndex().currLoc.y][this->getStartIndex().currLoc.x].g = cost;
+	this->getGrid()[this->getStartIndex().currLoc.y][this->getStartIndex().currLoc.x].expandOrder = counter;
+	this->getGrid()[this->getStartIndex().currLoc.y][this->getStartIndex().currLoc.x].dirArrival = 0;
+
+	cost++;
 	counter++;
 
+	// As long as we have not reached the goal or have a possible route
 	while((found == false) && (resign == false)){
 		// Check if we still have elements on the open list
 		if (openCells.empty()){
@@ -81,97 +115,78 @@ void PathPlanner::search(Map* map){
 			openCells.sort(compare);
 			it = openCells.begin();
 
-			if (((*it).currLoc.x == this->_goal.currLoc.x) && ((*it).currLoc.y == this->_goal.currLoc.y)){
+			// If we got the goal
+			if (((*it).currLoc.x == this->getGoalIndex().currLoc.x) &&
+					((*it).currLoc.y == this->getGoalIndex().currLoc.y)){
 				found = true;
 				cout << "Find Goal" << endl;
 			}
 			else{
 				// Move on all the directions
-				for (int i = 0; i < 4; i++){
+				for (int i = 0; i < 8; i++){
 					newCell.currLoc.x = (*it).currLoc.x + DIR_VEC[i].x;
 					newCell.currLoc.y = (*it).currLoc.y + DIR_VEC[i].y;
 
 					// If in the grid
-					if ((newCell.currLoc.x >= 0)&&(newCell.currLoc.x < map->getWidthBlowGrid()) &&
-							(newCell.currLoc.y >= 0)&&(newCell.currLoc.y < map->getHeightBlowGrid())){
+					if ((newCell.currLoc.x >= 0)&&(newCell.currLoc.x < this->getMap()->getWidthBlowGrid()) &&
+							(newCell.currLoc.y >= 0)&&(newCell.currLoc.y < this->getMap()->getHeightBlowGrid())){
 
 						if((this->isExistListByLoc(openCells.begin(), openCells.end(), newCell.currLoc) == false)&&
-							(this->_grid[newCell.currLoc.y][newCell.currLoc.x].closed == false)&&
-							(this->_grid[newCell.currLoc.y][newCell.currLoc.x].color != C_BLACK)){
+							(this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].closed == false)&&
+							(this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].color != GeneralService::C_BLACK)){
 
-							this->_grid[newCell.currLoc.y][newCell.currLoc.x].g = (*it).g + this->_cost;
-							this->_grid[newCell.currLoc.y][newCell.currLoc.x].expandOrder = counter;
-							this->_grid[newCell.currLoc.y][newCell.currLoc.x].dirArrival = i;
+							this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].g = (*it).g + cost;
+							this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].expandOrder = counter;
+							this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].dirArrival = i;
 							counter++;
 
-							newCell.g = (*it).g + this->_cost;
-							newCell.f = this->_grid[newCell.currLoc.y][newCell.currLoc.x].g +
-									this->_grid[newCell.currLoc.y][newCell.currLoc.x].h;
+							newCell.g = (*it).g + cost;
+							newCell.f = this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].g +
+									this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].h +
+									this->getGrid()[newCell.currLoc.y][newCell.currLoc.x].f;
 							openCells.push_back(newCell);
 						}
 					}
 				}
 
-				this->_grid[(*it).currLoc.y][(*it).currLoc.x].closed = true;
+				this->getGrid()[(*it).currLoc.y][(*it).currLoc.x].closed = true;
 				openCells.erase(it);
 			}
 		}
 	}
 
-	cout << "before plan" << endl;
 	if(found){
 		this->plan();
-		map->gridToPng("blowGrid.png", this->_grid, map->getWidthBlowGrid(), map->getHeightBlowGrid());
-		cout << "end plan" << endl;
+		this->getMap()->gridToPng(GeneralService::PNG_BLOW_GRID, this->getGrid(),
+				this->getMap()->getWidthBlowGrid(), this->getMap()->getHeightBlowGrid());
 	}
 }
 
-vector <location> PathPlanner::plan(){
+void PathPlanner::plan(){
 	vector <location> wayPoints;
 
-	location loc = {this->_goal.currLoc.x, this->_goal.currLoc.y};
+	location loc = {this->getGoalIndex().currLoc.x, this->getGoalIndex().currLoc.y};
 	location next;
 
-	while ((loc.x != this->_start.currLoc.x) || (loc.y != this->_start.currLoc.y)){
-		cout << loc.x << " " << loc.y << endl;
-		loc.x = loc.x - DIR_VEC[this->_grid[loc.y][loc.x].dirArrival].x;
-		loc.y = loc.y - DIR_VEC[this->_grid[loc.y][loc.x].dirArrival].y;
-		this->_grid[loc.y][loc.x].color = C_GREEN;
-		wayPoints.push_back(loc);
-	}
+	while ((loc.x != this->getStartIndex().currLoc.x) || (loc.y != this->getStartIndex().currLoc.y)){
+		next.x = loc.x - DIR_VEC[this->getGrid()[loc.y][loc.x].dirArrival].x;
+		next.y = loc.y - DIR_VEC[this->getGrid()[loc.y][loc.x].dirArrival].y;
 
-	return wayPoints;
+		this->getGrid()[loc.y][loc.x].color = GeneralService::C_GREEN;
+		this->setWayPoint(loc);
+		loc = next;
+	}
 }
 
-Acell PathPlanner::calcCell(DIR dir, Acell currCell){
-	Acell newCell;
-
-	if ((this->_grid[currCell.currLoc.x + DIR_VEC[dir].x][currCell.currLoc.y + DIR_VEC[dir].y].color) == C_WHITE){
-		newCell.currLoc.x = currCell.currLoc.x + DIR_VEC[dir].x;
-		newCell.currLoc.y = currCell.currLoc.y + DIR_VEC[dir].y;
-		newCell.g = this->_cost;
-	}
-	else{
-		newCell.currLoc.x = NULL;
-		newCell.currLoc.y= NULL;
-		newCell.g = NULL;
-	}
-
-	return newCell;
-}
-
-void PathPlanner::calcHeuristicFunction(Map* map){
+void PathPlanner::calcHeuristicFunction(){
 	DIR diriction = DOWN;
 	int counter;
 
-	for(int y = 0; y < map->getHeightBlowGrid(); y++){
+	for(int y = 0; y < this->getMap()->getHeightBlowGrid(); y++){
 		counter = this->_goal.currLoc.y + this->_goal.currLoc.x - y;
-		for(int x = 0; x < map->getWidthBlowGrid(); x++){
-			if ((x == 120) && (y == 97)){
-				cout << "CHange" << endl;
-			}
+		for(int x = 0; x < this->getMap()->getWidthBlowGrid(); x++){
 
-			this->_grid[y][x].h = counter;
+			this->getGrid()[y][x].h = counter;
 			if (diriction == DOWN){
 				counter--;
 			}
@@ -184,66 +199,26 @@ void PathPlanner::calcHeuristicFunction(Map* map){
 			}
 		}
 	}
-
-
-/*	int counter = this->_goal.currLoc.y + this->_goal.currLoc.x;
-	int limit = this->_goal.currLoc.y + this->_goal.currLoc.x;;
-
-	int x = 0;
-	int y = 0;
-
-	while(counter != 0){
-		this->_grid[y][x].h = counter;
-		--x;
-		++y;
-	}
-
-	for(int y = 0; y < limit; y++){
-		int yS = 0;
-		for(int x = y; x >= 0; x--){
-			this->_grid[yS][x].h = counter;
-			yS++;
-		}
-		--counter;
-	}
-
-
-
-	while(counter != 0){
-		this->_grid[y][x].h = counter;
-	}*/
-	/*this->_grid[this->_goal.currLoc.y][this->_goal.currLoc.x].h= counter;
-	counter++;*/
-
-/*//	if ((newCell.currLoc.x >= 0)&&(newCell.currLoc.x < map.getWidthBlowGrid()) &&
-//								(newCell.currLoc.y >= 0)&&(newCell.currLoc.y < map.getHeightBlowGrid()))
-
-
-	for(int y = this->_goal.currLoc.y + 1; y < map.getHeightBlowGrid(); y++){
-
-	}
-
-
-	while (this->_grid[this->_start.currLoc.y][this->_start.currLoc.x.].h != NULL){
-		for (int y = this->_goal.currLoc.y - counter; y > 0; y++){
-			for (int x = this->_goal.currLoc.x - counter; x > 0; x++){
-				if (((y >= 0) && (y < map.getHeightBlowGrid()) &&
-						(x >= 0) && (x < map.getWidthBlowGrid()))){
-					this->_grid[y][x].h = counter;
-				}
-			}
-
-		}
-	}*/
 }
 
-void PathPlanner::checkGValue(Map* map){
-	for (int y = 0; y < map->getHeightBlowGrid(); y++){
-		cout << "[ ";
-		for (int x = 0; x < map->getWidthBlowGrid(); x++){
-			cout << this->_grid[y][x].g << ",";
+void PathPlanner::calcPriorities(){
+	for (int y = 0; y < this->getMap()->getHeightBlowGrid(); y++){
+		for (int x = 0; x < this->getMap()->getWidthBlowGrid(); x++){
+			for (int i = 0; i < 8; i++){
+				if (((x + DIR_VEC[i].x) >= 0)&&((x + DIR_VEC[i].x) < this->getMap()->getWidthBlowGrid()) &&
+					((y + DIR_VEC[i].y) >= 0)&&((y +DIR_VEC[i].y) < this->getMap()->getHeightBlowGrid())){
+					if (this->_grid[y + DIR_VEC[i].y][x + DIR_VEC[i].x].color == GeneralService::C_BLACK){
+						this->_grid[y][x].f += GeneralService::P_BLACK;
+					}
+					if (this->_grid[y + DIR_VEC[i].y][x + DIR_VEC[i].x].color == GeneralService::C_GRAY){
+						this->_grid[y][x].f += GeneralService::P_GRAY;
+					}
+					else{
+						this->_grid[y][x].f += GeneralService::P_WHITE;
+					}
+				}
+			}
 		}
-		cout << " ]" << endl;
 	}
 }
 

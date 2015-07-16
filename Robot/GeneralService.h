@@ -29,12 +29,18 @@ struct robotSize{
 
 struct cellGrid{
 	unsigned char color;
-	int priority;
 	int g;
 	int h;
+	int f = 0;
 	int expandOrder;
 	bool closed;
 	int dirArrival;
+};
+
+struct Acell{
+	int g;
+	int f;
+	location currLoc;
 };
 
 class GeneralService {
@@ -54,8 +60,7 @@ public:
 
 	// Colors
 	static const unsigned char C_BLACK;
-	static const unsigned char C_GRAY_D;
-	static const unsigned char C_GRAY_B;
+	static const unsigned char C_GRAY;
 	static const unsigned char C_GREEN;
 	static const unsigned char C_WHITE;
 	static const unsigned char C_PURPLE;
@@ -64,8 +69,7 @@ public:
 
 	// Priorities
 	static const int P_BLACK;
-	static const int P_GRAY_D;
-	static const int P_GRAY_B;
+	static const int P_GRAY;
 	static const int P_WHITE;
 };
 
