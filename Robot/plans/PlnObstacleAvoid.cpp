@@ -9,7 +9,6 @@
 
 
 PlnObstacleAvoid::PlnObstacleAvoid(Robot* robot):Plan(robot) {
-	//Creating Behaviors
 
 	//Creating behaviors
 	_behArr = new Behavior*[4];
@@ -29,12 +28,11 @@ PlnObstacleAvoid::PlnObstacleAvoid(Robot* robot):Plan(robot) {
 	_start = _behArr[0];
 }
 
-PlnObstacleAvoid::~PlnObstacleAvoid() {
-	// TODO Auto-generated destructor stub
-	for(int i=0;i<3;i++)
-		delete _behArr[i];
-}
-
 Behavior* PlnObstacleAvoid::getStartPoint() {
 	return _start;
+}
+
+PlnObstacleAvoid::~PlnObstacleAvoid() {
+	for(int i=0;i<3;i++)
+		delete _behArr[i];
 }

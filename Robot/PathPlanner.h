@@ -19,6 +19,7 @@ struct location{
 
 struct Acell{
 	int g;
+	int f;
 	location currLoc;
 };
 
@@ -33,20 +34,23 @@ enum DIR{
 
 class PathPlanner {
 private:
-	const location DIR_VEC[4] = {{-1, 1}, {0, -1}, {1, 0}, {0, 1}};
+	const location DIR_VEC[4] = {{0, 1}, {-1, 0}, {0, -1}, {1, 0}};
 
-	cellGrid **_grid;
+	Map* _map;
 	Acell _start;
 	Acell _goal;
+	cellGrid **_grid;
 	int _cost = 1;
 	Acell calcCell(DIR dir, Acell currCell);
-	bool findInListByLoc(list<Acell>::iterator it1, list<Acell>::iterator it2, location loc);
-
+	bool isExistListByLoc(list<Acell>::iterator it1, list<Acell>::iterator it2, location loc);
+	void checkGValue(Map* map);
+	vector <location> plan();
+	void calcHeuristicFunction(Map* map);
 
 public:
-	PathPlanner(Map map, int xStart, int yStart, int xGoal, int yGoal);
+	PathPlanner(Map* map, int xStart, int yStart, int xGoal, int yGoal);
 	virtual ~PathPlanner();
-	void search(Map map);
+	void search(Map* map);
 
 };
 

@@ -12,7 +12,7 @@ GoForward::GoForward(Robot* robot):Behavior(robot) {
 
 bool GoForward::startCondition()
 {
-	if(_robot->isForwardFree() )
+	if(_robot->isForwardFree())
 		return true;
 	else
 		return false;
@@ -21,14 +21,14 @@ bool GoForward::startCondition()
 bool GoForward::stopCondition()
 {
 	if(!_robot->isForwardFree())
-				return true;
-			else
-				return false;
+		return true;
+	else
+		return false;
 }
 
 void GoForward::action()
 {
-	_robot->setSpeed(0.4, 0.0);
+	_robot->setSpeed(0.5, 0.0);
 }
 
 GoForward::~GoForward() {

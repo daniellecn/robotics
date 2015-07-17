@@ -23,9 +23,9 @@ bool TurnAround::startCondition()
 bool TurnAround::stopCondition()
 {
 	if(_robot->isForwardFree())
-				return true;
-			else
-				return false;
+		return true;
+	else
+		return false;
 }
 
 void TurnAround::action()

@@ -339,6 +339,13 @@ void Map::gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int he
 			image[y * widthGrid * 4 + x * 4 + 1] = color;
 			image[y * widthGrid * 4 + x * 4 + 2] = color;
 			image[y * widthGrid * 4 + x * 4 + 3] = 255;
+
+			if (grid[y][x].color == C_GREEN){
+				image[y * widthGrid * 4 + x * 4 + 0] = 0;
+				image[y * widthGrid * 4 + x * 4 + 1] = 255;
+				image[y * widthGrid * 4 + x * 4 + 2] = 0;
+				image[y * widthGrid * 4 + x * 4 + 3] = 255;
+			}
 		}
 	}
 
@@ -349,11 +356,11 @@ void Map::gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int he
 		int x;
 
 		// START - RED
-		y = this->yPosToIndex(362, this->getHeightBlowGrid());
-		x = this->xPosToIndex(305, this->getWidthBlowGrid());
+		y = this->yPosToIndex(305, this->getHeightBlowGrid());
+		x = this->xPosToIndex(362, this->getWidthBlowGrid());
 
-		x = 90;
-		y = 76;
+		//x = 90;
+		//y = 76;
 
 		image[y * widthGrid * 4 + x * 4 + 0] = 255;
 		image[y * widthGrid * 4 + x * 4 + 1] = 0;
@@ -361,11 +368,11 @@ void Map::gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int he
 		image[y * widthGrid * 4 + x * 4 + 3] = 255;
 
 		// GOAL - BLUE
-		y = this->yPosToIndex(169, this->getHeightBlowGrid());
-		x = this->xPosToIndex(138, this->getWidthBlowGrid());
+		y = this->yPosToIndex(138, this->getHeightBlowGrid());
+		x = this->xPosToIndex(169, this->getWidthBlowGrid());
 
-		x = 42;
-		y = 34;
+		//x = 42;
+		//y = 34;
 
 		image[y * widthGrid * 4 + x * 4 + 0] = 0;
 		image[y * widthGrid * 4 + x * 4 + 1] = 0;
@@ -386,7 +393,7 @@ int Map::yPosToIndex(int yPosCm, int height){
 	return (yPosCm / 4);
 }
 
-/*int Map::xPosToIndexLocal(float xPos){
+int Map::xPosToIndexLocal(float xPos){
 	int xIndex = ((getWidthGrid() / 2) + (xPos / 10));
 
 	if (xIndex < 0) {
@@ -408,4 +415,4 @@ int Map::yPosToIndexLocal(float yPos){
 	}
 
 	return yIndex;
-}*/
+}

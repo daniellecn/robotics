@@ -8,17 +8,15 @@
 #ifndef PARTICLEMANAGER_H_
 #define PARTICLEMANAGER_H_
 
+#include "Particle.h"
 #include <vector>
 #include <iostream>
-
-#include "Particle.h"
 #include <libplayerc++/playerc++.h>
+
 using namespace std;
 
-namespace PlayerCc {
-
 class ParticleManager {
-	static const int 	MAX_PARTICLES 	= 200;
+	static const int 	MAX_PARTICLES 	= 100;
 	static const float 	STRONG_BELIEF 	= 0.7;
 	static const float 	WEAK_BELIEF 	= 0.3;
 
@@ -26,13 +24,11 @@ class ParticleManager {
 public:
 
 	ParticleManager();
+	ParticleManager(Position start);
 	virtual ~ParticleManager();
 
 	vector <Particle> getParticles();
-	vector <player_point_2d_t> getDrawableParticles();
-
-	void update(Position deltaPosition,double* laserArr,Map* map);
+	void 			  update(Position deltaPosition,double* laserArr,Map* map);
 };
-}
 
 #endif /* PARTICLEMANAGER_H_ */
