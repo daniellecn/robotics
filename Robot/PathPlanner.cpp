@@ -49,7 +49,7 @@ void PathPlanner::setMap(Map* map){
 	this->_map = map;
 }
 
-void PathPlanner::setWayPoint(location wayPoint){
+void PathPlanner::setWayPoint(wayPoint wayPoint){
 	this->_wayPoints.push_back(wayPoint);
 }
 
@@ -69,7 +69,7 @@ Map* PathPlanner::getMap(){
 	return this->_map;
 }
 
-vector <location> PathPlanner::getWayPoints(){
+vector <wayPoint> PathPlanner::getWayPoints(){
 	return this->_wayPoints;
 }
 
@@ -126,6 +126,7 @@ void PathPlanner::search(){
 				for (int i = 0; i < 8; i++){
 					newCell.currLoc.x = (*it).currLoc.x + DIR_VEC[i].x;
 					newCell.currLoc.y = (*it).currLoc.y + DIR_VEC[i].y;
+					newCell.dirArrival = i;
 
 					// If in the grid
 					if ((newCell.currLoc.x >= 0)&&(newCell.currLoc.x < this->getMap()->getWidthBlowGrid()) &&
@@ -163,18 +164,19 @@ void PathPlanner::search(){
 }
 
 void PathPlanner::plan(){
-	vector <location> wayPoints;
+	vector <wayPoint> wayPoints;
 
-	location loc = {this->getGoalIndex().currLoc.x, this->getGoalIndex().currLoc.y};
-	location next;
+	wayPoint point = {this->getGoalIndex().currLoc.x, this->getGoalIndex().currLoc.y, 0};
+	wayPoint next;
 
-	while ((loc.x != this->getStartIndex().currLoc.x) || (loc.y != this->getStartIndex().currLoc.y)){
-		next.x = loc.x - DIR_VEC[this->getGrid()[loc.y][loc.x].dirArrival].x;
-		next.y = loc.y - DIR_VEC[this->getGrid()[loc.y][loc.x].dirArrival].y;
+	while ((point.pointLoc.x != this->getStartIndex().currLoc.x) || (point.pointLoc.y != this->getStartIndex().currLoc.y)){
+		this->getGrid()[point.pointLoc.y][point.pointLoc.x].color = GeneralService::C_GREEN;
 
-		this->getGrid()[loc.y][loc.x].color = GeneralService::C_GREEN;
-		this->setWayPoint(loc);
-		loc = next;
+		next.pointLoc.x = point.pointLoc.x - DIR_VEC[this->getGrid()[point.pointLoc.y][point.pointLoc.x].dirArrival].x;
+		next.pointLoc.y = point.pointLoc.y - DIR_VEC[this->getGrid()[point.pointLoc.y][point.pointLoc.x].dirArrival].y;
+		next.dirArrival = this->getGrid()[point.pointLoc.y][point.pointLoc.x].dirArrival;
+		this->setWayPoint(point);
+		point = next;
 	}
 }
 

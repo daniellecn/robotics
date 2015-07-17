@@ -32,13 +32,13 @@ private:
 	Acell _start;
 	Acell _goal;
 	cellGrid **_grid;
-	vector <location> _wayPoints;
+	vector <wayPoint> _wayPoints;
 
 	void setStartIndex(int y, int x, int g, int f);
 	void setGoalIndex(int y, int x, int g, int f);
 	void setGrid(cellGrid** grid);
 	void setMap(Map* map);
-	void setWayPoint(location wayPoint);
+	void setWayPoint(wayPoint wayPoint);
 
 	void calcHeuristicFunction();
 	void calcPriorities();
@@ -55,7 +55,7 @@ public:
 	Acell getGoalIndex();
 	cellGrid** getGrid();
 	Map* getMap();
-	vector <location> getWayPoints();
+	vector <wayPoint> getWayPoints();
 
 	void search();
 

@@ -38,9 +38,16 @@ struct cellGrid{
 };
 
 struct Acell{
+	//cellGrid cell;
 	int g;
 	int f;
+	int dirArrival;
 	location currLoc;
+};
+
+struct wayPoint{
+	location pointLoc;
+	int dirArrival;
 };
 
 class GeneralService {

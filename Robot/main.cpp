@@ -11,6 +11,8 @@
 #include "Map.h"
 #include "Robot.h"
 #include "Manager.h"
+#include "PathPlanner.h"
+#include "WaypointManager.h"
 
 using namespace std;
 using namespace PlayerCc;
@@ -21,12 +23,21 @@ int main() {
 	Position start = {2.10,-2.9,dtor(20)};
 
 	// Init and start classes
-	Map map;
-	Robot robot("localhost",6665, start);
+	Map* map = new Map();
+
+	PathPlanner* path = new PathPlanner(map,
+			ConfigurationManager::getStartLocation().x / 4,
+			ConfigurationManager::getStartLocation().y / 4,
+			ConfigurationManager::getGoal().x / 4,
+			ConfigurationManager::getGoal().y / 4);
+
+	WaypointManager* pointsManager = new WaypointManager(path->getWayPoints(), path);
+
+	//Robot robot("localhost",6665, start);
 	//robot.setAddNoise(true);
-	PlnObstacleAvoid plan(&robot);
-	Manager manager(&robot, &map, &plan);
-	manager.run();
+	//PlnObstacleAvoid plan(&robot);
+	//Manager manager(&robot, &map, &plan);
+	//manager.run();
 
 	// Check real robot code
 /*

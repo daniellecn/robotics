@@ -9,15 +9,21 @@
 #define WAYPOINTMANAGER_H_
 
 #include <vector>
-#include "Location.h"
+#include "GeneralService.h"
+#include "PathPlanner.h"
 using namespace std;
 
 class WaypointManager {
+private:
 	static const float WAYPOINT_REACH_RADIUS = 1;
 
-	vector <Location> _waypointPool;
+	vector <location> _wayPointPool;
+
+	void setWayPointPool(vector <wayPoint> wayPoints, PathPlanner* pathP);
+	void setWayPoint(location point, cellGrid** grid);
 public:
-	WaypointManager();
+	WaypointManager(vector <wayPoint> wayPoints, PathPlanner* pathP);
+	vector <location> getWayPointPool();
 	virtual ~WaypointManager();
 };
 
