@@ -18,6 +18,8 @@ using namespace std;
 using namespace PlayerCc;
 
 int main() {
+	int resolution = ConfigurationManager::getGridResolutionCM() /
+			ConfigurationManager::getMapResolutionCM();
 
 	// Read config
 	Position start = {2.10,-2.9,dtor(20)};
@@ -26,10 +28,10 @@ int main() {
 	Map map;
 
 	PathPlanner path(&map,
-			ConfigurationManager::getStartLocation().x / 4,
-			ConfigurationManager::getStartLocation().y / 4,
-			ConfigurationManager::getGoal().x / 4,
-			ConfigurationManager::getGoal().y / 4);
+			ConfigurationManager::getStartLocation().x / resolution,
+			ConfigurationManager::getStartLocation().y / resolution,
+			ConfigurationManager::getGoal().x / resolution,
+			ConfigurationManager::getGoal().y / resolution);
 
 	Robot robot("localhost", 6665, start);
 	WaypointManager pointsManager(&path, &robot);
