@@ -349,6 +349,12 @@ void Map::changePixelColor(vector<unsigned char>* image, int width, int y, int x
 		(*image)[y * width * 4 + x * 4 + 2] = 255;
 		(*image)[y * width * 4 + x * 4 + 3] = 255;
 	}
+	else if (color == GeneralService::C_ORANGE){
+		(*image)[y * width * 4 + x * 4 + 0] = 255;
+		(*image)[y * width * 4 + x * 4 + 1] = 128;
+		(*image)[y * width * 4 + x * 4 + 2] = 0;
+		(*image)[y * width * 4 + x * 4 + 3] = 255;
+	}
 	else{
 		(*image)[y * width * 4 + x * 4 + 0] = color;
 		(*image)[y * width * 4 + x * 4 + 1] = color;

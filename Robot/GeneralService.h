@@ -73,6 +73,7 @@ public:
 	static const unsigned char C_PURPLE;
 	static const unsigned char C_RED;
 	static const unsigned char C_BLUE;
+	static const unsigned char C_ORANGE;
 
 	// Priorities
 	static const int P_BLACK;
