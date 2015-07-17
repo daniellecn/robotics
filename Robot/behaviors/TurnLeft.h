@@ -12,10 +12,12 @@
 class TurnLeft : public Behavior {
 public:
 	TurnLeft(Robot* robot);
+	virtual ~TurnLeft();
+
 	bool startCondition();
 	bool stopCondition();
 	void action();
-	virtual ~TurnLeft();
+	void print();
 };
 
 #endif /* TURNLEFT_H_ */

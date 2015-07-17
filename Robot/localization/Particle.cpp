@@ -7,36 +7,29 @@
 
 #include "Particle.h"
 
-namespace PlayerCc {
-
 Particle::Particle() {
 	_belPos.x = 0;
 	_belPos.y = 0;
 	_belPos.yaw = 0;
+	_gen = 0;
 	_belWeight = 1;
 }
 
 Particle::Particle(Position belPos, float belWeight) {
 	_belPos = belPos;
 	_belWeight = belWeight;
+	_gen = 0;
 }
 
 Particle::Particle(Particle* parent) {
 	_belPos = parent->getBelPos();
 	_belWeight = parent->getBelWeight();
+	_gen = parent->getGeneration() + 1;
 	randomize();
 }
 
-void Particle::randomize() {
-
-	_belPos.x += ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST) ;
-	_belPos.y += ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST) ;
-	_belPos.yaw += (((float(rand()) / float(RAND_MAX)) * MAX_TURN_DIST*2 - MAX_TURN_DIST)) * 0.1 ;
-
-	/*int sign = ((rand() % 2) == 0) ? -1 : 1;
-	_belPos.x += (rand() % 5) * sign ;
-	_belPos.y += (rand() % 5) * sign;
-	_belPos.yaw += ((rand() % 3) * sign * 0.1);*/
+int Particle::getGeneration() {
+	return _gen;
 }
 
 Position Particle::getBelPos() {
@@ -51,46 +44,55 @@ void Particle::setBelWeight(float belWeight) {
 	_belWeight = belWeight;
 }
 
+void Particle::randomize() {
+
+	float randX = ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST);
+	_belPos.x +=  randX;
+	float randY = ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST);
+	_belPos.y += randY;
+	float randYaw = (((float(rand()) / float(RAND_MAX)) * MAX_TURN_DIST*2 - MAX_TURN_DIST)) * 0.1;
+	_belPos.yaw +=  randYaw;
+}
+
 void Particle::update(Position deltaPos,double* laserArr,Map* map) {
 	double dist = sqrt(pow(deltaPos.x,2) + pow(deltaPos.y,2));
+
+	// apply the calculated motion
+	_belPos.yaw += deltaPos.yaw;
 	_belPos.x += deltaPos.x;
 	_belPos.y += deltaPos.y;
-	_belPos.yaw += deltaPos.yaw;
 
-	if ((abs(_belPos.x ) > 6.875) ||
-			(abs(_belPos.y ) > 4.75)) {
-		_belWeight = 0;
+	// If it reached out of the map there it has slim chances of being right
+	if ((abs(_belPos.x ) > 6.875) || (abs(_belPos.y ) > 4.75)) {
+		_belWeight = _belWeight * 0.001;
+	// Calculate probability by other factors
 	} else {
 		float predBel = _belWeight * probByMovement(deltaPos);
-		predBel = predBel * probByMeasurements(laserArr,map);
-		//predBel =  predBel * (1.0 + ((1.0 - predBel) / 2.0));
-		//cout << "bel " <<  predBel << endl;
-		_belWeight =  1.2 * predBel;
+		predBel *= probByMeasurements(laserArr,map);
+		_belWeight =  NORMALIZE_FACTOR * predBel;
+
+		if (_belWeight > 1) {
+			_belWeight = 1;
+		}
 	}
-	//cout << "bel " << _belWeight << endl;
-	// apply the calculated motion
-/*	_belPos.yaw += deltaPos.yaw;
-	_belPos.x += (cos(_belPos.yaw) * dist);
-	_belPos.y += (sin(_belPos.yaw) * dist);*/
 }
 
 float Particle::probByMovement(Position deltaPos) {
-	double distance;
-	distance = sqrt(pow(deltaPos.x,2) + pow(deltaPos.y,2));
+	double distance = sqrt(pow(deltaPos.x,2) + pow(deltaPos.y,2));
+	double yaw = abs(deltaPos.yaw);
 	float posiblity;
 
-	// Get positive val of delYaw
-	deltaPos.yaw = abs(deltaPos.yaw) ;
-	if (distance <= SHORT_DIST && deltaPos.yaw <= SMALL_ANGLE)
+	if (distance <= SHORT_DIST && yaw <= SMALL_ANGLE) {
 		posiblity = 1.0;
-	else if (distance <= LONG_DIST && deltaPos.yaw <= BIG_ANGLE)
+	}
+	else if (distance >= LONG_DIST && yaw >= BIG_ANGLE) {
 		posiblity = 0.7;
-	else if (distance <= LONG_DIST)
-		posiblity = 0.4;
-	else if (deltaPos.yaw <= BIG_ANGLE)
-		posiblity = 0.5;
-	 else
-		 posiblity = 0.3;
+	}
+	else if (distance >= SHORT_DIST && yaw >= BIG_ANGLE) {
+		posiblity = 0.8;
+	} else {
+		posiblity = 0.9;
+	}
 
 	return posiblity;
 }
@@ -98,33 +100,42 @@ float Particle::probByMovement(Position deltaPos) {
 float Particle::probByMeasurements(double* laserArr,Map* map) {
 	unsigned char C_BLACK = 0;
 	unsigned char C_WHITE = 255;
+
 	float hit = 0.0,miss = 0.0;
 	int heightIndex,widthIndex;
-	cellGrid** grid = map->getGrid();
-	cellGrid currCell ;
-	Location obsLocation,currLocation;
-	for (int i=0; i < LASER_SAMPLES_NUM; i+=10) {
-		for (int j=0; j < laserArr[i] ; j ++) {
+	unsigned char currCell ;
+	location obsLocation,currLocation;
 
-			currLocation = map->getObstacleLocation(_belPos.x,_belPos.y,_belPos.yaw,laserArr[i],i);
-			widthIndex = map->xPosToIndex(currLocation.x * 100);
-			heightIndex = map->yPosToIndex(currLocation.y * 100);
-			currCell = grid[heightIndex][widthIndex];
+	for (int i=0; i < LASER_SAMPLES_NUM; i+=LASER_READ_JUMP) {
 
-			if (currCell.color == C_WHITE) {
+		// Check space between obstacle
+		for (int j=0; j < laserArr[i] ; j++) {
+
+			// Check if the space the laser read as open is also open on the map
+			// considering the believed place of the robot is this particle
+			currLocation = relativeObjectLocation(_belPos.x,_belPos.y,_belPos.yaw,j,i);
+			widthIndex = map->xPosToIndexLocal(currLocation.x * 100);
+			heightIndex = map->yPosToIndexLocal(currLocation.y * 100);
+			currCell = map->getGrid()[heightIndex][widthIndex].color;
+
+			if (currCell == C_WHITE) {
 				hit++;
 			} else {
 				miss++;
 			}
 		}
 
+		// Check if laser found obstacle
 		if (laserArr[i] < LASER_RANGE_MAX) {
-			obsLocation = map->getObstacleLocation(_belPos.x,_belPos.y,_belPos.yaw,laserArr[i],i);
-			widthIndex = map->xPosToIndex(obsLocation.x * 100);
-			heightIndex = map->yPosToIndex(obsLocation.y * 100);
-			currCell = grid[heightIndex][widthIndex];
 
-			if (currCell.color == C_BLACK) {
+			// Check if the obstacle the laser found is also on the map
+			// considering the believed place of the robot is this particle
+			obsLocation = relativeObjectLocation(_belPos.x,_belPos.y,_belPos.yaw,laserArr[i],i);
+			widthIndex = map->xPosToIndexLocal(obsLocation.x * 100);
+			heightIndex = map->yPosToIndexLocal(obsLocation.y * 100);
+			currCell = map->getGrid()[heightIndex][widthIndex].color;
+
+			if (currCell == C_BLACK) {
 				hit++;
 			} else {
 				miss++;
@@ -135,8 +146,16 @@ float Particle::probByMeasurements(double* laserArr,Map* map) {
 	return (hit / (hit + miss));
 }
 
+location Particle::relativeObjectLocation(float x,float y,float yaw,double distanceFromObj,int sensorIndex) {
+	location objLocation;
+
+	objLocation.x = x + distanceFromObj*cos(yaw + LASER_INDEX_TO_ANGLE_RAD(sensorIndex));
+	objLocation.y = y + distanceFromObj*sin(yaw + LASER_INDEX_TO_ANGLE_RAD(sensorIndex));
+
+	return objLocation;
+}
+
 Particle::~Particle() {
 }
 
 
-} /* namespace PlayerCc */

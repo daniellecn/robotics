@@ -16,7 +16,9 @@
 #include "../behaviors/TurnAround.h"
 
 class PlnObstacleAvoid: public Plan {
+
 public:
+
 	PlnObstacleAvoid(Robot* robot);
 	Behavior* getStartPoint();
 	virtual ~PlnObstacleAvoid();

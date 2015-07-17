@@ -7,20 +7,25 @@
 
 #ifndef MANAGER_H_
 #define MANAGER_H_
+
+#include "Robot.h"
+#include "WaypointManager.h"
 #include "plans/Plan.h"
 #include "localization/ParticleManager.h"
-#include "Robot.h"
 #include <vector>
 
 using namespace std;
+
 class Manager {
-	Behavior* _curr;
-	Robot* _robot;
-	ParticleManager* _pm;
-	Map*			 _map;
-	Plan*			 _plan;
+	Behavior* 			_curr;
+	Robot* 				_robot;
+	ParticleManager* 	_pm;
+	Map*			 	_map;
+	Plan*			 	_plan;
+	WaypointManager* 	_wm;
+
 public:
-	Manager(Robot* robot, Map* map, Plan* plan);
+	Manager(Robot* robot, Map* map, Plan* plan, WaypointManager* wayPoints);
 	void run();
 	virtual ~Manager();
 };

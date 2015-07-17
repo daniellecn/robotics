@@ -20,7 +20,9 @@ void Behavior::addNext(Behavior* beh)
 	for(i=0;i<_size;i++)
 		tmp[i] = _behArr[i];
 	tmp[i] = beh;
+
 	delete [] _behArr;
+
 	_behArr=tmp;
 	_size++;
 }
