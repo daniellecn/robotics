@@ -21,12 +21,14 @@ class ParticleManager {
 	static const float 	WEAK_BELIEF 	= 0.3;
 
 	vector <Particle> _particleArr;
+	Particle	_avgParticle;
 public:
 
 	ParticleManager();
 	ParticleManager(Position start);
 	virtual ~ParticleManager();
 
+	Particle	getAvgParticle();
 	vector <Particle> getParticles();
 	void 			  update(Position deltaPosition,double* laserArr,Map* map);
 };

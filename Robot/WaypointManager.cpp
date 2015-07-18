@@ -80,6 +80,10 @@ void WaypointManager::setWayPointPool(vector <wayPoint> wayPoints, PathPlanner* 
 	}
 }
 
+int WaypointManager::getTargetIndex() {
+	return _targetIndex;
+}
+
 double WaypointManager::distanceBetween(locationF a, locationF b) {
 	return sqrt(pow(a.x - b.x,2) + pow(a.y - b.y,2));
 }
@@ -108,25 +112,26 @@ locationF WaypointManager::switchToNextWaypoint() {
 	return _target;
 }
 
-void WaypointManager::turnToWaypoint(Position avgLocation) {
+void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Map* map) {
 	//float angle = angleBetween(_target,{avgLocation.x,avgLocation.y});
 	float angle = (atan2(_target.y - avgLocation.y,_target.x - avgLocation.x));
 	int turn = 40;
 	//turn = fmod(turn,2*M_PI);
 	// If robot angle is not correct
 	if (abs(avgLocation.yaw - angle) > dtor(8)) {
-		if (avgLocation.yaw  > 0 && avgLocation.yaw > abs(angle)) {
+/*		if (avgLocation.yaw  > 0 && avgLocation.yaw > abs(angle)) {
 			turn = -40;
 		} else if (avgLocation.yaw  < 0 && avgLocation.yaw >  angle) {
 			turn = -40;
 		}
-		_robot->setSpeed(0,dtor(turn));
-/*
+		_robot->setSpeed(0,dtor(turn));*/
+
   		if (abs(avgLocation.yaw) < abs(angle)) {
 			_robot->setSpeed(0,dtor(40));
 		} else {
 			_robot->setSpeed(0,dtor(-40));
 		}
+  		/*
   if (turn > 0) {
 			_robot->setSpeed(0,dtor(40));
 			cout << "left mine: " << avgLocation.yaw << " target: " << angle << endl;
@@ -136,10 +141,15 @@ void WaypointManager::turnToWaypoint(Position avgLocation) {
 		}*/
 		cout << "turn to waypoint : "<< _targetIndex << ": " << _target.x << "," << _target.y << endl;
 	}
-
+	Position deltas;
 	while (abs(_robot->getCurrPos().yaw - angle) > dtor(8)) {
 		_robot->read();
 		_robot->calcDeltas();
+		deltas = _robot->getLastMoveDelta();
+		if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
+			pm->update(deltas,_robot->getLaserArr(),map);
+			cout << "parts " << pm->getParticles().size() << endl;
+		}
 	}
 
 	_robot->setSpeed(0,0);

@@ -34,7 +34,7 @@ void Manager::run() {
 
 		while (!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y})) {
 			if (_robot->isForwardFree()) {
-				_wm->turnToWaypoint(_robot->getCurrPos());
+				_wm->turnToWaypoint(_robot->getCurrPos(),_pm,_map);
 			}
 			_curr->action();
 			_curr->print();
@@ -45,7 +45,8 @@ void Manager::run() {
 				_robot->calcDeltas();
 				deltas = _robot->getLastMoveDelta();
 				if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
-					//_pm->update(deltas,_robot->getLaserArr(),_map);
+					_pm->update(deltas,_robot->getLaserArr(),_map);
+					cout << "parts " << _pm->getParticles().size() << endl;
 				}
 			}
 
@@ -69,15 +70,26 @@ void Manager::run() {
 		cout << "me dd : " << _robot->getXPos() << "," << _robot->getYPos() << endl;
 		cout << "before switch me : " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << " target : " << target.x << "," << target.y ;
 		cout << " distance " << sqrt(pow(_robot->getCurrPos().x - target.x,2) + pow(_robot->getCurrPos().y - target.y,2)) << endl;
-		_map->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
+		//_map->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
 		target=_wm->switchToNextWaypoint();
-		_map->getGrid()[_map->yPosToIndexLocal(_robot->getCurrPos().y *100)][_map->xPosToIndexLocal(_robot->getCurrPos().x*100)].color = GeneralService::C_ORANGE;
+		//_map->getGrid()[_map->yPosToIndexLocal(_robot->getCurrPos().y *100)][_map->xPosToIndexLocal(_robot->getCurrPos().x*100)].color = GeneralService::C_ORANGE;
 		cout << "after switch target : " << target.x << "," << target.y << endl;
 /*		_map->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
 		target=_wm->switchToNextWaypoint();
 		_map->getGrid()[_map->yPosToIndexLocal(_robot->getCurrPos().y *100)][_map->xPosToIndexLocal(_robot->getCurrPos().x*100)].color = GeneralService::C_ORANGE;
 		//_map->gridToPng(GeneralService::PNG_BLOW_GRID, _map->getGrid(),
-		//		_map->getWidthGrid(), _map->getHeightGrid());
+		//		_map->getWidthGrid(), _map->getHeightGrid());*/
+/*		if (_wm->getTargetIndex() == 11) {
+			for (vector<Particle>::iterator curr = _pm->getParticles().begin() ; curr != _pm->getParticles().end() ;++curr) {
+
+					cout << "[" << curr->getBelPos().x << "," << curr->getBelPos().y << ","
+								<< curr->getBelPos().yaw << "," << curr->getBelWeight()<<  "]";
+
+					_map->getGrid()[_map->yPosToIndexLocal(curr->getBelPos().y * 100)]
+					               [_map->xPosToIndexLocal(curr->getBelPos().x * 100)].color =  GeneralService::C_PURPLE;
+				}
+			_map->getGrid()[_map->yPosToIndexLocal(_robot->getYPos() * 100)][_map->xPosToIndexLocal(_robot->getXPos() * 100)].color = GeneralService::C_ORANGE;
+
 		for (int x= 0; x < _map->getHeightGrid(); x++) {
 			for (int y = 0; y < _map->getWidthGrid(); y++) {
 				if (_map->getGrid()[x][y].color ==  GeneralService::C_ORANGE) {
@@ -92,6 +104,7 @@ void Manager::run() {
 				}
 			}
 			cout << endl;
+		}
 		}*/
 	}
 
@@ -122,7 +135,11 @@ void Manager::run() {
 	}
 
 	cout << endl << "Max particle: [" << part->getBelPos().x << "," << part->getBelPos().y  << "," << part->getBelPos().yaw << "]" << endl;
-	cout << "Max bel : " << part->getBelWeight() << " Max gen : " << part->getGeneration() << endl;
+	cout << "Max bel : " << (int)part->getBelWeight() << " Max gen : " << part->getGeneration() << endl;
+	cout << "Avg particle: [" << _pm->getAvgParticle().getBelPos().x << ","
+		<< _pm->getAvgParticle().getBelPos().y << ","
+		<< _pm->getAvgParticle().getBelPos().yaw << "]";
+	cout << " Avg bel : " << (int)_pm->getAvgParticle().getBelWeight()<< endl;
 
 	// Put robot on map
 	_map->getGrid()[_map->yPosToIndexLocal(_robot->getYPos() * 100)][_map->xPosToIndexLocal(_robot->getXPos() * 100)].color = col2;

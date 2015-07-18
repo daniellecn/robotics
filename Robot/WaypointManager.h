@@ -11,6 +11,7 @@
 #include <vector>
 #include "GeneralService.h"
 #include "PathPlanner.h"
+#include "localization/ParticleManager.h"
 #include "Robot.h"
 #include <vector>
 #include <math.h>
@@ -35,11 +36,12 @@ public:
 	WaypointManager(PathPlanner* pathP, Robot* robot);
 	virtual ~WaypointManager();
 
+	int	getTargetIndex();
 	vector <locationF> getWayPointPool();
 	bool 	isLastWaypoint();
 	bool 	isWaypointReached(locationF avgLocation);
 	locationF 	switchToNextWaypoint();
-	void 	turnToWaypoint(Position avgLocation);
+	void 	turnToWaypoint(Position avgLocation,ParticleManager* pm,Map* map);
 };
 
 #endif /* WAYPOINTMANAGER_H_ */

@@ -30,7 +30,7 @@ class Particle {
 	static const float SMALL_ANGLE 		= 0.1;
 	static const float SHORT_DIST 		= 0.2;
 	static const float LONG_DIST 		= 0.7;
-	static const float NORMALIZE_FACTOR = 1.2;
+	static const float NORMALIZE_FACTOR = 1.4;
 	static const int   LASER_READ_JUMP  = 10;
 
 	float 	probByMovement(Position deltaPos);

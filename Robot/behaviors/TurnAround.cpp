@@ -12,8 +12,8 @@ TurnAround::TurnAround(Robot* robot):Behavior(robot) {
 
 bool TurnAround::startCondition()
 {
-	if((!_robot->isRightFree()) &&
-	   (!_robot->isLeftFree()) &&
+	if((!(_robot->getObsIndex() > 333 && _robot->isRightFree())) &&
+	   (!(_robot->getObsIndex() < 333 && _robot->isLeftFree())) &&
 	   (!_robot->isForwardFree()))
 		return true;
 	else

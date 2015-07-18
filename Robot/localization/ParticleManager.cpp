@@ -37,6 +37,8 @@ void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 
 	int count = 0;
 	vector <Particle> particles_new;
+	Position avgPos = {0,0,0};
+	float avgWeight = 0;
 
 	for (vector<Particle>::iterator curr = _particleArr.begin(); curr != _particleArr.end(); ++curr) {
 		count++;
@@ -56,9 +58,25 @@ void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 	}
 
 	if (particles_new.size() > 0) {
+		for (vector<Particle>::iterator curr = _particleArr.begin(); curr != _particleArr.end(); ++curr) {
+			avgPos.x+=curr->getBelPos().x;
+			avgPos.y+=curr->getBelPos().y;
+			avgPos.yaw+=curr->getBelPos().yaw;
+			avgWeight+=curr->getBelWeight();
+		}
+		cout << avgPos.x << "," << avgPos.y << "," << avgPos.yaw << "," << avgWeight << endl;
+		avgPos.x /= (particles_new.size() * 1.0);
+		avgPos.y /= (particles_new.size() * 1.0);
+		avgPos.yaw /= (particles_new.size() * 1.0);
+		avgWeight /= (particles_new.size() * 1.0);
+		Particle a(avgPos,avgWeight);
+		_avgParticle = a;
 		_particleArr = particles_new;
 	}
 }
 
+Particle	ParticleManager::getAvgParticle() {
+	return _avgParticle;
+}
 ParticleManager::~ParticleManager() {
 }
