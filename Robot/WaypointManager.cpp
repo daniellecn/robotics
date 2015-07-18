@@ -92,10 +92,10 @@ float WaypointManager::angleBetween(locationF a, locationF b) {
 	return (atan2(b.y - a.y,b.x - a.x));
 }
 
-bool WaypointManager::isWaypointReached(locationF avgLocation) {
+bool WaypointManager::isWaypointReached(Position avgLocation) {
 	//cout << "me : " << avgLocation.x << "," << avgLocation.y << " target : " << _target.x << "," << _target.y << endl;
 	//cout << "distance : " << distanceBetween(_target,avgLocation) << endl;
-	return (distanceBetween(_target,avgLocation) <= REACH_RADIUS);
+	return (distanceBetween(_target,{avgLocation.x,avgLocation.y}) <= REACH_RADIUS);
 }
 
 bool WaypointManager::isLastWaypoint() {
@@ -142,13 +142,12 @@ void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Ma
 		cout << "turn to waypoint : "<< _targetIndex << ": " << _target.x << "," << _target.y << endl;
 	}
 	Position deltas;
-	while (abs(_robot->getCurrPos().yaw - angle) > dtor(8)) {
+	while (abs(pm->getAvgParticle().getBelPos().yaw - angle) > dtor(8)) {
 		_robot->read();
 		_robot->calcDeltas();
 		deltas = _robot->getLastMoveDelta();
 		if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
 			pm->update(deltas,_robot->getLaserArr(),map);
-			cout << "parts " << pm->getParticles().size() << endl;
 		}
 	}
 

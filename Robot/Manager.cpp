@@ -27,27 +27,26 @@ void Manager::run() {
 	// Choose the first behavior of the plan
 	if (_curr->startCondition() == false)
 		_curr = _curr->selectNext();
-
 	// Stop when the last waypoint is reached
 	while((!_wm->isLastWaypoint()) &&
-		  (!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y}))) {
+		  (!_wm->isWaypointReached(_pm->getAvgParticle().getBelPos()))) {
 
-		while (!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y})) {
+		while (!_wm->isWaypointReached(_pm->getAvgParticle().getBelPos())) {
 			if (_robot->isForwardFree()) {
-				_wm->turnToWaypoint(_robot->getCurrPos(),_pm,_map);
+				_wm->turnToWaypoint(_pm->getAvgParticle().getBelPos(),_pm,_map);
 			}
 			_curr->action();
 			_curr->print();
 			// Move in the same direction until conditions change
 			while((!_curr->stopCondition()) &&
-				  (!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y}))) {
+				  (!_wm->isWaypointReached(_pm->getAvgParticle().getBelPos()))) {
 				_robot->read();
 				_robot->calcDeltas();
 				deltas = _robot->getLastMoveDelta();
 				if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
 					_pm->update(deltas,_robot->getLaserArr(),_map);
-					cout << "parts " << _pm->getParticles().size() << endl;
 				}
+
 			}
 
 			// Perform the next behavior according to the plan
@@ -135,11 +134,12 @@ void Manager::run() {
 	}
 
 	cout << endl << "Max particle: [" << part->getBelPos().x << "," << part->getBelPos().y  << "," << part->getBelPos().yaw << "]" << endl;
-	cout << "Max bel : " << (int)part->getBelWeight() << " Max gen : " << part->getGeneration() << endl;
+	cout << "Max bel : " << part->getBelWeight() << " Max gen : " << part->getGeneration() << endl;
 	cout << "Avg particle: [" << _pm->getAvgParticle().getBelPos().x << ","
 		<< _pm->getAvgParticle().getBelPos().y << ","
 		<< _pm->getAvgParticle().getBelPos().yaw << "]";
-	cout << " Avg bel : " << (int)_pm->getAvgParticle().getBelWeight()<< endl;
+	cout << " Avg bel : " << _pm->getAvgParticle().getBelWeight()<< endl;
+	cout << "dist avg max" << sqrt(pow(_pm->getAvgParticle().getBelPos().x - part->getBelPos().x,2) + pow(_pm->getAvgParticle().getBelPos().y - part->getBelPos().y,2));
 
 	// Put robot on map
 	_map->getGrid()[_map->yPosToIndexLocal(_robot->getYPos() * 100)][_map->xPosToIndexLocal(_robot->getXPos() * 100)].color = col2;

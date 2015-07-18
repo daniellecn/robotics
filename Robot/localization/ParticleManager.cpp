@@ -10,6 +10,7 @@
 ParticleManager::ParticleManager(Position start) {
 	Particle newParticle(start,1.0);
 	_particleArr.push_back(newParticle);
+	_avgParticle = newParticle;
 }
 
 ParticleManager::ParticleManager() {
@@ -34,7 +35,7 @@ vector<Particle> ParticleManager::getParticles() {
 }
 
 void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
-
+	double dist;
 	int count = 0;
 	vector <Particle> particles_new;
 	Position avgPos = {0,0,0};
@@ -44,6 +45,10 @@ void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 		count++;
 		curr->update(deltaPosition, laserArr, map);
 
+		dist = sqrt(pow(_avgParticle.getBelPos().x - curr->getBelPos().x,2) + pow(_avgParticle.getBelPos().y - curr->getBelPos().y,2));
+		if (dist > 2.5) {
+			//curr->setBelWeight(curr->getBelWeight() * 0.5);
+		}
 		// Save the particle if its belief isn't too weak
 		if (curr->getBelWeight() > WEAK_BELIEF) {
 			particles_new.push_back((*curr));
@@ -58,13 +63,13 @@ void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 	}
 
 	if (particles_new.size() > 0) {
+		cout << "parts " << particles_new.size() << endl;
 		for (vector<Particle>::iterator curr = _particleArr.begin(); curr != _particleArr.end(); ++curr) {
 			avgPos.x+=curr->getBelPos().x;
 			avgPos.y+=curr->getBelPos().y;
 			avgPos.yaw+=curr->getBelPos().yaw;
 			avgWeight+=curr->getBelWeight();
 		}
-		cout << avgPos.x << "," << avgPos.y << "," << avgPos.yaw << "," << avgWeight << endl;
 		avgPos.x /= (particles_new.size() * 1.0);
 		avgPos.y /= (particles_new.size() * 1.0);
 		avgPos.yaw /= (particles_new.size() * 1.0);

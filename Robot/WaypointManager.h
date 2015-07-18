@@ -28,7 +28,6 @@ private:
 	Robot*	 			_robot;
 
 	void setWayPointPool(vector <wayPoint> wayPoints, PathPlanner* pathP);
-	void setWayPoint(locationF point, cellGrid** grid);
 
 	double distanceBetween(locationF a, locationF b);
 	float  angleBetween(locationF a, locationF b);
@@ -39,7 +38,7 @@ public:
 	int	getTargetIndex();
 	vector <locationF> getWayPointPool();
 	bool 	isLastWaypoint();
-	bool 	isWaypointReached(locationF avgLocation);
+	bool 	isWaypointReached(Position avgLocation);
 	locationF 	switchToNextWaypoint();
 	void 	turnToWaypoint(Position avgLocation,ParticleManager* pm,Map* map);
 };
