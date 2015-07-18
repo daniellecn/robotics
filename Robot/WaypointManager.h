@@ -14,32 +14,32 @@
 #include "Robot.h"
 #include <vector>
 #include <math.h>
+#include <algorithm>
 using namespace std;
 
 class WaypointManager {
 private:
-	static const float REACH_RADIUS = 0.35;
+	static const float REACH_RADIUS = 0.20;
 
-	vector <location> _wayPointPool;
+	vector <locationF> 	_wayPointPool;
 	int 				_targetIndex;
-	location			_target;
+	locationF			_target;
 	Robot*	 			_robot;
 
 	void setWayPointPool(vector <wayPoint> wayPoints, PathPlanner* pathP);
-	void setWayPoint(location point, cellGrid** grid);
+	void setWayPoint(locationF point, cellGrid** grid);
 
-	double distanceBetween(location a, location b);
-	float  angleBetween(location a, location b);
+	double distanceBetween(locationF a, locationF b);
+	float  angleBetween(locationF a, locationF b);
 public:
 	WaypointManager(PathPlanner* pathP, Robot* robot);
 	virtual ~WaypointManager();
 
-	vector <location> getWayPointPool();
-	bool 	isEndReached(Position avgLocation);
-	bool 	isWaypointReached(Position avgLocation);
-	float 	getAngleToWaypoint();
-	void 	goToWaypoint(Position avgLocation);
-	void 	getNextWaypoint();
+	vector <locationF> getWayPointPool();
+	bool 	isLastWaypoint();
+	bool 	isWaypointReached(locationF avgLocation);
+	locationF 	switchToNextWaypoint();
+	void 	turnToWaypoint(Position avgLocation);
 };
 
 #endif /* WAYPOINTMANAGER_H_ */

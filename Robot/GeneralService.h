@@ -16,10 +16,15 @@ struct location{
 	int y;
 };
 
+struct locationF{
+	float x;
+	float y;
+};
+
 struct Position {
-	double x;
-	double y;
-	double yaw;
+	float x;
+	float y;
+	float yaw;
 };
 
 struct robotSize{

@@ -14,6 +14,10 @@ bool TurnLeft::startCondition()
 {
 	double obs = _robot->getLaser(_robot->getObsIndex());
 
+	if (_robot->getObsIndex() < 333 && _robot->isLeftFree()) {
+		return true;
+	}
+/*
 	// If far away and on the right
 	if (obs > 1 && _robot->getObsIndex() < 333) {
 		return true;
@@ -23,7 +27,7 @@ bool TurnLeft::startCondition()
 	// If very close on the right and left is free
 	} else if (obs < 0.5 && _robot->isLeftFree() && _robot->getObsIndex() < 333) {
 		return true;
-	}
+	}*/
 
 	return false;
 }
@@ -51,7 +55,7 @@ void TurnLeft::action()
 
 	if (obs > 1) {
 		_robot->setSpeed(0.2, dtor(10));
-	} else if (obs > 0.5) {
+	} else if (obs > 0.2) {
 		_robot->setSpeed(0.1, dtor(30));
 	} else {
 		_robot->setSpeed(0.0, dtor(90));

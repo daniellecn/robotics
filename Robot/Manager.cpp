@@ -21,42 +21,82 @@ void Manager::run() {
 	cout << "Start manager" << endl;
 	cout << "Robot position before move: [" << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << "," << _robot->getCurrPos().yaw << "]" << endl;
 
-	int count = 0, updates = 0;
 	Position deltas;
 	cout << "Start moving" << endl;
-
+	locationF target = _wm->getWayPointPool().at(0);
 	// Choose the first behavior of the plan
 	if (_curr->startCondition() == false)
 		_curr = _curr->selectNext();
 
-	bool reached = false;
-	while(!reached) {
+	// Stop when the last waypoint is reached
+	while((!_wm->isLastWaypoint()) &&
+		  (!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y}))) {
 
-		reached = _wm->isWaypointReached(_robot->getCurrPos());
-
-		cout << count << endl;
+		while (!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y})) {
+			if (_robot->isForwardFree()) {
+				_wm->turnToWaypoint(_robot->getCurrPos());
+			}
 			_curr->action();
-		// Move in the same direction until conditions change
-		while(!(_curr->stopCondition())) {
-			count++;
-			_robot->read();
-			_robot->calcDeltas();
-			deltas = _robot->getLastMoveDelta();
-			if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
-				//_pm->update(deltas,_robot->getLaserArr(),_map);
-				updates++;
+			_curr->print();
+			// Move in the same direction until conditions change
+			while((!_curr->stopCondition()) &&
+				  (!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y}))) {
+				_robot->read();
+				_robot->calcDeltas();
+				deltas = _robot->getLastMoveDelta();
+				if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
+					//_pm->update(deltas,_robot->getLaserArr(),_map);
+				}
 			}
 
-		}
+			// Perform the next behavior according to the plan
+			if (_curr->stopCondition()) {
+				_curr = _curr->selectNext();
+			}
+			if (_curr == NULL) {
+				cout << "sad" << endl;
+				break;
+			}
 
-		// Perform the next behavior according to the plan
-		_curr = _curr->selectNext();
-		if (!_curr)
-			break;
+/*			_wm->turnToWaypoint(_robot->getCurrPos());
+			_robot->setSpeed(0.5,0);
+			while(!_wm->isWaypointReached({_robot->getCurrPos().x,_robot->getCurrPos().y}))
+				{
+			_robot->read();
+			_robot->calcDeltas();
+				}*/
+		}
+		cout << "me dd : " << _robot->getXPos() << "," << _robot->getYPos() << endl;
+		cout << "before switch me : " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << " target : " << target.x << "," << target.y ;
+		cout << " distance " << sqrt(pow(_robot->getCurrPos().x - target.x,2) + pow(_robot->getCurrPos().y - target.y,2)) << endl;
+		_map->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
+		target=_wm->switchToNextWaypoint();
+		_map->getGrid()[_map->yPosToIndexLocal(_robot->getCurrPos().y *100)][_map->xPosToIndexLocal(_robot->getCurrPos().x*100)].color = GeneralService::C_ORANGE;
+		cout << "after switch target : " << target.x << "," << target.y << endl;
+/*		_map->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
+		target=_wm->switchToNextWaypoint();
+		_map->getGrid()[_map->yPosToIndexLocal(_robot->getCurrPos().y *100)][_map->xPosToIndexLocal(_robot->getCurrPos().x*100)].color = GeneralService::C_ORANGE;
+		//_map->gridToPng(GeneralService::PNG_BLOW_GRID, _map->getGrid(),
+		//		_map->getWidthGrid(), _map->getHeightGrid());
+		for (int x= 0; x < _map->getHeightGrid(); x++) {
+			for (int y = 0; y < _map->getWidthGrid(); y++) {
+				if (_map->getGrid()[x][y].color ==  GeneralService::C_ORANGE) {
+					cout << "R";
+				} else if (_map->getGrid()[x][y].color ==  GeneralService::C_PURPLE) {
+					cout << "M";
+				} else if (_map->getGrid()[x][y].color ==  GeneralService::C_BLACK) {
+					cout << "*";
+				}
+				else {
+					cout << " ";
+				}
+			}
+			cout << endl;
+		}*/
 	}
 
+	cout << "I'm here!" << endl;
 	cout << "Stop moving" << endl;
-	cout << "Localization updates :" << updates << endl;
 	cout << "Particle number " << _pm->getParticles().size() << endl;
 	cout << "Print result : " << endl;
 
@@ -93,6 +133,10 @@ void Manager::run() {
 				cout << "X";
 			} else if (_map->getGrid()[x][y].color == col2) {
 				cout << "R";
+			} else if (_map->getGrid()[x][y].color ==  GeneralService::C_ORANGE) {
+					cout << "O";
+			} else if (_map->getGrid()[x][y].color ==  GeneralService::C_PURPLE) {
+					cout << "W";
 			} else if (_map->getGrid()[x][y].color == black) {
 				cout << "*";
 			}

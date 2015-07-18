@@ -79,7 +79,7 @@ void Particle::update(Position deltaPos,double* laserArr,Map* map) {
 
 float Particle::probByMovement(Position deltaPos) {
 	double distance = sqrt(pow(deltaPos.x,2) + pow(deltaPos.y,2));
-	double yaw = abs(deltaPos.yaw);
+	float yaw = abs(deltaPos.yaw);
 	float posiblity;
 
 	if (distance <= SHORT_DIST && yaw <= SMALL_ANGLE) {
@@ -104,7 +104,7 @@ float Particle::probByMeasurements(double* laserArr,Map* map) {
 	float hit = 0.0,miss = 0.0;
 	int heightIndex,widthIndex;
 	unsigned char currCell ;
-	location obsLocation,currLocation;
+	locationF obsLocation,currLocation;
 
 	for (int i=0; i < LASER_SAMPLES_NUM; i+=LASER_READ_JUMP) {
 
@@ -146,8 +146,8 @@ float Particle::probByMeasurements(double* laserArr,Map* map) {
 	return (hit / (hit + miss));
 }
 
-location Particle::relativeObjectLocation(float x,float y,float yaw,double distanceFromObj,int sensorIndex) {
-	location objLocation;
+locationF Particle::relativeObjectLocation(float x,float y,float yaw,double distanceFromObj,int sensorIndex) {
+	locationF objLocation;
 
 	objLocation.x = x + distanceFromObj*cos(yaw + LASER_INDEX_TO_ANGLE_RAD(sensorIndex));
 	objLocation.y = y + distanceFromObj*sin(yaw + LASER_INDEX_TO_ANGLE_RAD(sensorIndex));

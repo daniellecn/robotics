@@ -37,7 +37,8 @@ public:
 	int							yPosToIndex(int yPosCm);
 	int 						xPosToIndexLocal(float xPos);
 	int 						yPosToIndexLocal(float xPos);
-
+	float						xIndexToPos(int xIndex);
+	float						yIndexToPos(int yIndex);
 	void changePixelColor(vector<unsigned char>* map, int widthMap, int y, int x, unsigned char color);
 	void gridToPng(const char* fileName, cellGrid **grid, int widthGrid, int heightGrid);
 

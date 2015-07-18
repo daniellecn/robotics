@@ -12,13 +12,13 @@ TurnRight::TurnRight(Robot* robot):Behavior(robot) {
 
 bool TurnRight::startCondition()
 {
-/*	if(_robot->isRightFree() && _robot->getObsIndex() > 333) {
+	if(_robot->isRightFree() && _robot->getObsIndex() > 333) {
 		return true;
 	}
 	else
-		return false;*/
+		return false;
 
-	double obs = _robot->getLaser(_robot->getObsIndex());
+/*	double obs = _robot->getLaser(_robot->getObsIndex());
 
 	// If far away and on the left
 	if (obs > 1 && _robot->getObsIndex() > 333) {
@@ -31,7 +31,7 @@ bool TurnRight::startCondition()
 		return true;
 	}
 
-	return false;
+	return false;*/
 }
 
 bool TurnRight::stopCondition()
@@ -56,7 +56,7 @@ void TurnRight::action()
 	double obs = _robot->getLaser(_robot->getObsIndex());
 	if (obs > 1) {
 		_robot->setSpeed(0.2, dtor(-10));
-	} else if (obs > 0.5) {
+	} else if (obs > 0.2) {
 		_robot->setSpeed(0.1, dtor(-30));
 	} else {
 		_robot->setSpeed(0.0, dtor(-90));

@@ -50,7 +50,7 @@ public:
 	int 		getGeneration();
 
 	void 		update(Position deltaPos,double* laserArr,Map* map);
-	location 	relativeObjectLocation(float x,float y,float yaw,double distanceFromObj,int sensorIndex);
+	locationF 	relativeObjectLocation(float x,float y,float yaw,double distanceFromObj,int sensorIndex);
 };
 
 #endif /* PARTICLE_H_ */

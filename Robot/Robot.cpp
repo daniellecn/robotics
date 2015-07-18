@@ -12,6 +12,7 @@ Robot::Robot(char* ip, int port, Position startPos) {
 	_pp = new Position2dProxy(_pc);
 	_lp = new LaserProxy(_pc);
 
+	_pp->SetOdometry(startPos.x,startPos.y,startPos.yaw);
 	_pp->SetMotorEnable(true);
 
 	//For fixing Player's reading BUG
@@ -19,7 +20,7 @@ Robot::Robot(char* ip, int port, Position startPos) {
 		_pc->Read();
 	}
 
-	_pp->SetOdometry(startPos.x,startPos.y,startPos.yaw);
+	cout << "ODOMETRY" << getXPos() << "," << getYPos() << "," << getYaw() << endl;
 	_currPos = startPos;
 	_addNoise = false;
 	_lastMoveDelta = Position {0,0,0};
@@ -155,7 +156,7 @@ bool Robot::isLeftMoreFree() {
 }
 
 bool Robot::isRightFree() {
-	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(-50)] > 0.3)
+	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(-50)] > 0.2)
 		return true;
 	else
 		return false;
@@ -163,7 +164,7 @@ bool Robot::isRightFree() {
 
 bool Robot::isLeftFree() {
 
-	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(50)] > 0.3)
+	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(50)] > 0.2)
 		return true;
 	else
 		return false;
@@ -173,15 +174,21 @@ bool Robot::isForwardFree() {
 
 	float visualRadAngle = getVisualAngle(OBSTABLE_MIN_DIST,X_SIZE_METER);
 	int angleLaserAddition = (visualRadAngle / LASER_ANGULAR_RESOLUTION_RAD) ;
+	float minObs = 4, minIndex = 0;
 
 	for (int i = FORWARD_LASER_INDEX - (angleLaserAddition/2);
 			 i < FORWARD_LASER_INDEX + (angleLaserAddition/2);
 			 i += LASER_READ_JUMP) {
-
-		if ((*_lp)[i] < OBSTABLE_MIN_DIST) {
-			_obsIndex = i;
-			return false;
+		if ((*_lp)[i] < OBSTABLE_MIN_DIST && (*_lp)[i] < minObs) {
+			minObs = (*_lp)[i];
+			minIndex =i;
 		}
+	}
+
+	if (minObs < OBSTABLE_MIN_DIST) {
+		cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex]  << endl;
+		_obsIndex = minIndex;
+		return false;
 	}
 
 	return true;

@@ -371,8 +371,16 @@ int Map::yPosToIndex(int yPosCm){
 	return (yPosCm / 4);
 }
 
+float Map::xIndexToPos(int xIndex) {
+	return (10 * (xIndex  - (getWidthBlowGrid() / 2.0)));
+}
+
+float Map::yIndexToPos(int yIndex) {
+	return (-10 * (yIndex  - (getHeightBlowGrid() / 2.0)));
+}
+
 int Map::xPosToIndexLocal(float xPos){
-	int xIndex = ((getWidthGrid() / 2) + (xPos / ConfigurationManager::getGridResolutionCM()));
+	int xIndex = ((getWidthGrid() / 2.0) + (xPos / (ConfigurationManager::getGridResolutionCM() * 1.0)));
 
 	if (xIndex < 0) {
 		xIndex = 0;
@@ -384,7 +392,7 @@ int Map::xPosToIndexLocal(float xPos){
 }
 
 int Map::yPosToIndexLocal(float yPos){
-	int yIndex = ((getHeightGrid() / 2) - (yPos / ConfigurationManager::getGridResolutionCM()));
+	int yIndex = ((getHeightGrid() / 2.0) - (yPos / (ConfigurationManager::getGridResolutionCM() * 1.0)));
 
 	if (yIndex < 0) {
 		yIndex = 0;
