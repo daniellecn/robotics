@@ -32,5 +32,5 @@ const unsigned char GeneralService::C_ORANGE = 128;
 
 //priorities
 const int GeneralService::P_WHITE = 1;
-const int GeneralService::P_GRAY  = 2;
-const int GeneralService::P_BLACK = 3;
+const int GeneralService::P_GRAY  = 5;
+const int GeneralService::P_BLACK = 10;

@@ -247,20 +247,9 @@ void Map::blowMap(std::vector<unsigned char> map, int widthMap, int heightMap, i
 			 				|| map[yNav * widthMap * 4 + xNav * 4 + 2] == GeneralService::C_BLACK){
 
 				// Blow the pixel in two levels
-				this->setBlowMap(yBlow - 2*this->getNumPixelsToBlow(), yBlow - this->getNumPixelsToBlow(),
+
+				this->setBlowMap(yBlow - 2*this->getNumPixelsToBlow(), yBlow + 2*this->getNumPixelsToBlow(),
 								 xBlow - 2*this->getNumPixelsToBlow(), xBlow + 2*this->getNumPixelsToBlow(),
-								 GeneralService::C_GRAY);
-
-				this->setBlowMap(yBlow + this->getNumPixelsToBlow(), yBlow + 2*this->getNumPixelsToBlow(),
-								 xBlow - 2*this->getNumPixelsToBlow(), xBlow + 2*this->getNumPixelsToBlow(),
-								 GeneralService::C_GRAY);
-
-				this->setBlowMap(yBlow - this->getNumPixelsToBlow(), yBlow + this->getNumPixelsToBlow(),
-								 xBlow - 2*this->getNumPixelsToBlow(), xBlow - this->getNumPixelsToBlow(),
-								 GeneralService::C_GRAY);
-
-				this->setBlowMap(yBlow - this->getNumPixelsToBlow(), yBlow + this->getNumPixelsToBlow(),
-								 xBlow + this->getNumPixelsToBlow(), xBlow + 2*this->getNumPixelsToBlow(),
 								 GeneralService::C_GRAY);
 
 				this->setBlowMap(yBlow - this->getNumPixelsToBlow(), yBlow + this->getNumPixelsToBlow(),

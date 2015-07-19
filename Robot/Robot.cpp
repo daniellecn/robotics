@@ -186,7 +186,7 @@ bool Robot::isForwardFree() {
 	}
 
 	if (minObs < OBSTABLE_MIN_DIST) {
-		cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex]  << endl;
+		//cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex] << endl;
 		_obsIndex = minIndex;
 		return false;
 	}

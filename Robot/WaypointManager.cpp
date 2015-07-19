@@ -124,7 +124,7 @@ void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Ma
 	}
 
 	// If robot angle is not correct
-	if (abs(avgLocation.yaw - angle) > dtor(8)) {
+	if (fabs(avgLocation.yaw - angle) > dtor(8)) {
 
   		if (positiveAvgDeg < positiveTargetDeg) {
 			_robot->setSpeed(0,dtor(40));
@@ -136,7 +136,7 @@ void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Ma
 		cout << "turn to waypoint : "<< _targetIndex << ": " << _target.x << "," << _target.y << endl;
 	}
 	Position deltas;
-	while (abs(pm->getAvgParticle().getBelPos().yaw - angle) > dtor(8)) {
+	while (fabs(pm->getAvgParticle().getBelPos().yaw - angle) > dtor(8)) {
 		_robot->read();
 		_robot->calcDeltas();
 		deltas = _robot->getLastMoveDelta();

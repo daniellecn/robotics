@@ -34,7 +34,7 @@ int main() {
 			ConfigurationManager::getGoal().y / resolution);
 
 	Robot robot("localhost", 6665, start);
-	//robot.setAddNoise(true);
+	robot.setAddNoise(true);
 
 	PlnObstacleAvoid plan(&robot);
 	Manager manager(&robot, &map, &plan, &path);
