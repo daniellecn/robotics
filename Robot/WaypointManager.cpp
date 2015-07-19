@@ -113,32 +113,26 @@ locationF WaypointManager::switchToNextWaypoint() {
 }
 
 void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Map* map) {
-	//float angle = angleBetween(_target,{avgLocation.x,avgLocation.y});
 	float angle = (atan2(_target.y - avgLocation.y,_target.x - avgLocation.x));
-	int turn = 40;
-	//turn = fmod(turn,2*M_PI);
+	float positiveTargetDeg = (angle * 180 / M_PI);
+	float positiveAvgDeg = (avgLocation.yaw * 180 / M_PI);
+	if (angle < 0) {
+		positiveTargetDeg = 360 + (angle * 180 / M_PI);
+	}
+	if (avgLocation.yaw < 0) {
+		positiveAvgDeg = 360 + positiveAvgDeg;
+	}
+
 	// If robot angle is not correct
 	if (abs(avgLocation.yaw - angle) > dtor(8)) {
-/*		if (avgLocation.yaw  > 0 && avgLocation.yaw > abs(angle)) {
-			turn = -40;
-		} else if (avgLocation.yaw  < 0 && avgLocation.yaw >  angle) {
-			turn = -40;
-		}
-		_robot->setSpeed(0,dtor(turn));*/
 
-  		if (abs(avgLocation.yaw) < abs(angle)) {
+  		if (positiveAvgDeg < positiveTargetDeg) {
 			_robot->setSpeed(0,dtor(40));
+			cout << "left mine: " << avgLocation.yaw * 180 / M_PI<< " target: " << angle * 180 / M_PI<< endl;
 		} else {
 			_robot->setSpeed(0,dtor(-40));
+			cout << "right mine: " << avgLocation.yaw * 180 / M_PI<< " target: " << angle * 180 / M_PI<< endl;
 		}
-  		/*
-  if (turn > 0) {
-			_robot->setSpeed(0,dtor(40));
-			cout << "left mine: " << avgLocation.yaw << " target: " << angle << endl;
-		} else {
-			_robot->setSpeed(0,dtor(-40));
-			cout << "right mine: " << avgLocation.yaw << " target: " << angle << endl;
-		}*/
 		cout << "turn to waypoint : "<< _targetIndex << ": " << _target.x << "," << _target.y << endl;
 	}
 	Position deltas;

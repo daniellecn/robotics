@@ -372,11 +372,11 @@ int Map::yPosToIndex(int yPosCm){
 }
 
 float Map::xIndexToPos(int xIndex) {
-	return (10 * (xIndex  - (getWidthBlowGrid() / 2.0)));
+	return (10.0 * (xIndex  - (getWidthGrid() / 2.0)));
 }
 
 float Map::yIndexToPos(int yIndex) {
-	return (-10 * (yIndex  - (getHeightBlowGrid() / 2.0)));
+	return (-10.0 * (yIndex  - (getHeightGrid() / 2.0)));
 }
 
 int Map::xPosToIndexLocal(float xPos){

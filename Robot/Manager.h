@@ -9,6 +9,7 @@
 #define MANAGER_H_
 
 #include "Robot.h"
+#include "PathPlanner.h"
 #include "WaypointManager.h"
 #include "plans/Plan.h"
 #include "localization/ParticleManager.h"
@@ -23,9 +24,10 @@ class Manager {
 	Map*			 	_map;
 	Plan*			 	_plan;
 	WaypointManager* 	_wm;
+	PathPlanner*		_path;
 
 public:
-	Manager(Robot* robot, Map* map, Plan* plan, WaypointManager* wayPoints);
+	Manager(Robot* robot, Map* map, Plan* plan, PathPlanner* pathPlan);
 	void run();
 	virtual ~Manager();
 };

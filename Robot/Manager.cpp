@@ -7,14 +7,15 @@
 
 #include "Manager.h"
 
-Manager::Manager(Robot* robot, Map* map, Plan* plan, WaypointManager* wayPoints){
+Manager::Manager(Robot* robot, Map* map, Plan* plan, PathPlanner* pathPlan){
 	_robot = robot;
 	_map = map;
 	_plan = plan;
+	_path = pathPlan;
 	_curr = plan->getStartPoint();
 
+	_wm = new WaypointManager(pathPlan,robot);
 	_pm = new ParticleManager(robot->getCurrPos());
-	_wm = wayPoints;
 }
 
 void Manager::run() {
@@ -69,17 +70,16 @@ void Manager::run() {
 		cout << "me dd : " << _robot->getXPos() << "," << _robot->getYPos() << endl;
 		cout << "before switch me : " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << " target : " << target.x << "," << target.y ;
 		cout << " distance " << sqrt(pow(_robot->getCurrPos().x - target.x,2) + pow(_robot->getCurrPos().y - target.y,2)) << endl;
-		//_map->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
+		//_path->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
 		target=_wm->switchToNextWaypoint();
-		//_map->getGrid()[_map->yPosToIndexLocal(_robot->getCurrPos().y *100)][_map->xPosToIndexLocal(_robot->getCurrPos().x*100)].color = GeneralService::C_ORANGE;
+		_path->getGrid()[_map->yPosToIndexLocal(_pm->getAvgParticle().getBelPos().y *100)][_map->xPosToIndexLocal(_pm->getAvgParticle().getBelPos().x*100)].color = GeneralService::C_ORANGE;
 		cout << "after switch target : " << target.x << "," << target.y << endl;
 /*		_map->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
 		target=_wm->switchToNextWaypoint();
 		_map->getGrid()[_map->yPosToIndexLocal(_robot->getCurrPos().y *100)][_map->xPosToIndexLocal(_robot->getCurrPos().x*100)].color = GeneralService::C_ORANGE;
 		//_map->gridToPng(GeneralService::PNG_BLOW_GRID, _map->getGrid(),
 		//		_map->getWidthGrid(), _map->getHeightGrid());*/
-/*		if (_wm->getTargetIndex() == 11) {
-			for (vector<Particle>::iterator curr = _pm->getParticles().begin() ; curr != _pm->getParticles().end() ;++curr) {
+/*			for (vector<Particle>::iterator curr = _pm->getParticles().begin() ; curr != _pm->getParticles().end() ;++curr) {
 
 					cout << "[" << curr->getBelPos().x << "," << curr->getBelPos().y << ","
 								<< curr->getBelPos().yaw << "," << curr->getBelWeight()<<  "]";
@@ -103,7 +103,6 @@ void Manager::run() {
 				}
 			}
 			cout << endl;
-		}
 		}*/
 	}
 
@@ -132,6 +131,8 @@ void Manager::run() {
 			part = &(*curr);
 		}
 	}
+	_path->getMap()->gridToPng(GeneralService::PNG_BLOW_GRID, _path->getGrid(),
+			_path->getMap()->getWidthBlowGrid(), _path->getMap()->getHeightBlowGrid());
 
 	cout << endl << "Max particle: [" << part->getBelPos().x << "," << part->getBelPos().y  << "," << part->getBelPos().yaw << "]" << endl;
 	cout << "Max bel : " << part->getBelWeight() << " Max gen : " << part->getGeneration() << endl;
