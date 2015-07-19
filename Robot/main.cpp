@@ -35,9 +35,9 @@ int main() {
 
 	Robot robot("localhost", 6665, start);
 	//robot.setAddNoise(true);
-	WaypointManager pointsManager(&path, &robot);
+
 	PlnObstacleAvoid plan(&robot);
-	Manager manager(&robot, &map, &plan, &pointsManager);
+	Manager manager(&robot, &map, &plan, &path);
 	manager.run();
 
 
