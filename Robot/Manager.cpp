@@ -22,7 +22,7 @@ void Manager::run() {
 	cout << "Start manager" << endl;
 	cout << "Robot position before move: [" << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << "," << _robot->getCurrPos().yaw << "]" << endl;
 
-	Position deltas;
+	position deltas;
 	cout << "Start moving" << endl;
 	locationF target = _wm->getWayPointPool().at(0);
 	// Choose the first behavior of the plan

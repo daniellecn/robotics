@@ -8,7 +8,7 @@
 #include "ConfigurationManager.h"
 
 	string 		ConfigurationManager::_mapPath = "";
-	Position	ConfigurationManager::_startLocation = {0, 0, 0};
+	position	ConfigurationManager::_startLocation = {0, 0, 0};
 	location 	ConfigurationManager::_goal = {0, 0};
 	robotSize 	ConfigurationManager::_robotSize = {0, 0};
 	float		ConfigurationManager::_mapResolutionCM = 0;
@@ -55,7 +55,7 @@ string ConfigurationManager::getMapPath(){
 	return ConfigurationManager::_mapPath;
 }
 
-Position ConfigurationManager::getStartLocation(){
+position ConfigurationManager::getStartLocation(){
 	string data;
 	int found;
 

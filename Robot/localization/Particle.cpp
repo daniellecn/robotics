@@ -15,7 +15,7 @@ Particle::Particle() {
 	_belWeight = 1;
 }
 
-Particle::Particle(Position belPos, float belWeight) {
+Particle::Particle(position belPos, float belWeight) {
 	_belPos = belPos;
 	_belWeight = belWeight;
 	_gen = 0;
@@ -32,7 +32,7 @@ int Particle::getGeneration() {
 	return _gen;
 }
 
-Position Particle::getBelPos() {
+position Particle::getBelPos() {
 	return _belPos;
 }
 
@@ -46,30 +46,32 @@ void Particle::setBelWeight(float belWeight) {
 
 void Particle::randomize() {
 
-	float randX = ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST);
+	float randX = ((float(rand()) / float(RAND_MAX)) * GeneralService::MAX_WALK_DISTRIBUTION*2 - GeneralService::MAX_WALK_DISTRIBUTION);
 	_belPos.x +=  randX;
-	float randY = ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST);
+	float randY = ((float(rand()) / float(RAND_MAX)) * GeneralService::MAX_WALK_DISTRIBUTION*2 - GeneralService::MAX_WALK_DISTRIBUTION);
 	_belPos.y += randY;
-	float randYaw = (((float(rand()) / float(RAND_MAX)) * MAX_TURN_DIST*2 - MAX_TURN_DIST)) * 0.1;
+	float randYaw = (((float(rand()) / float(RAND_MAX)) * GeneralService::MAX_TURN_DISTRIBUTION*2 - GeneralService::MAX_TURN_DISTRIBUTION)) * 0.1;
 	_belPos.yaw +=  randYaw;
 }
 
-void Particle::update(Position deltaPos,double* laserArr,Map* map) {
-	double dist = sqrt(pow(deltaPos.x,2) + pow(deltaPos.y,2));
-
+void Particle::update(position deltaPos,double* laserArr,Map* map) {
 	// apply the calculated motion
 	_belPos.yaw += deltaPos.yaw;
 	_belPos.x += deltaPos.x;
 	_belPos.y += deltaPos.y;
 
+	// Get map size in meters ( divide by 100 to get meters and by 2 to get middle map)
+	float halfMapHeight = (((map->getHeightMap() * ConfigurationManager::getMapResolutionCM()) / 100) / 2);
+	float halfMapWidth = (((map->getWidthMap() * ConfigurationManager::getMapResolutionCM()) / 100) / 2);
+
 	// If it reached out of the map there it has slim chances of being right
-	if ((abs(_belPos.x ) > 6.875) || (abs(_belPos.y ) > 4.75)) {
+	if ((abs(_belPos.x) > halfMapWidth) || (abs(_belPos.y) > halfMapHeight)) {
 		_belWeight = _belWeight * 0.001;
 	// Calculate probability by other factors
 	} else {
 		float predBel = _belWeight * probByMovement(deltaPos);
 		predBel *= probByMeasurements(laserArr,map);
-		_belWeight =  NORMALIZE_FACTOR * predBel;
+		_belWeight =  GeneralService::NORMALIZE_FACTOR * predBel;
 
 		if (_belWeight > 1) {
 			_belWeight = 1;
@@ -77,18 +79,18 @@ void Particle::update(Position deltaPos,double* laserArr,Map* map) {
 	}
 }
 
-float Particle::probByMovement(Position deltaPos) {
+float Particle::probByMovement(position deltaPos) {
 	double distance = sqrt(pow(deltaPos.x,2) + pow(deltaPos.y,2));
 	float yaw = abs(deltaPos.yaw);
 	float posiblity;
 
-	if (distance <= SHORT_DIST && yaw <= SMALL_ANGLE) {
+	if (distance <= GeneralService::SHORT_DIST && yaw <= GeneralService::SMALL_ANGLE) {
 		posiblity = 1.0;
 	}
-	else if (distance >= LONG_DIST && yaw >= BIG_ANGLE) {
+	else if (distance >= GeneralService::LONG_DIST && yaw >= GeneralService::BIG_ANGLE) {
 		posiblity = 0.7;
 	}
-	else if (distance >= SHORT_DIST && yaw >= BIG_ANGLE) {
+	else if (distance >= GeneralService::SHORT_DIST && yaw >= GeneralService::BIG_ANGLE) {
 		posiblity = 0.8;
 	} else {
 		posiblity = 0.9;
@@ -98,15 +100,12 @@ float Particle::probByMovement(Position deltaPos) {
 }
 
 float Particle::probByMeasurements(double* laserArr,Map* map) {
-	unsigned char C_BLACK = 0;
-	unsigned char C_WHITE = 255;
-
 	float hit = 0.0,miss = 0.0;
 	int heightIndex,widthIndex;
 	unsigned char currCell ;
 	locationF obsLocation,currLocation;
 
-	for (int i=0; i < LASER_SAMPLES_NUM; i+=LASER_READ_JUMP) {
+	for (int i=0; i < LASER_SAMPLES_NUM; i+=GeneralService::PARTICLE_LASER_READ_JUMP) {
 
 		// Check space between obstacle
 		for (int j=0; j < laserArr[i] ; j++) {
@@ -118,13 +117,12 @@ float Particle::probByMeasurements(double* laserArr,Map* map) {
 			heightIndex = map->yPosToIndexLocal(currLocation.y * 100);
 			currCell = map->getGrid()[heightIndex][widthIndex].color;
 
-			if (currCell == C_WHITE) {
+			if (currCell == GeneralService::C_WHITE) {
 				hit++;
 			} else {
 				miss++;
 			}
 		}
-		//cout << "white hit" << hit << " miss " << miss << endl;
 
 		// Check if laser found obstacle
 		if (laserArr[i] < LASER_RANGE_MAX) {
@@ -136,15 +134,14 @@ float Particle::probByMeasurements(double* laserArr,Map* map) {
 			heightIndex = map->yPosToIndexLocal(obsLocation.y * 100);
 			currCell = map->getGrid()[heightIndex][widthIndex].color;
 
-			if (currCell == C_BLACK) {
+			if (currCell == GeneralService::C_BLACK) {
 				hit++;
 			} else {
 				miss++;
 			}
 		}
-			//cout << "black hit" << hit << " miss " << miss << endl;
 	}
-	cout << " hit" << hit << " miss " << miss << endl;
+
 	return (hit / (hit + miss));
 }
 

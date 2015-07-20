@@ -38,9 +38,9 @@ public:
 	int	getTargetIndex();
 	vector <locationF> getWayPointPool();
 	bool 	isLastWaypoint();
-	bool 	isWaypointReached(Position avgLocation);
+	bool 	isWaypointReached(position avgLocation);
 	locationF 	switchToNextWaypoint();
-	void 	turnToWaypoint(Position avgLocation,ParticleManager* pm,Map* map);
+	void 	turnToWaypoint(position avgLocation,ParticleManager* pm,Map* map);
 };
 
 #endif /* WAYPOINTMANAGER_H_ */

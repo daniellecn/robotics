@@ -22,7 +22,7 @@ int main() {
 			ConfigurationManager::getMapResolutionCM();
 
 	// Read config
-	Position start = {2.10,-2.9,dtor(20)};
+	position start = {2.10,-2.9,dtor(20)};
 
 	// Init and start classes
 	Map map;

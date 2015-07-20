@@ -7,21 +7,21 @@
 
 #include "ParticleManager.h"
 
-ParticleManager::ParticleManager(Position start) {
+ParticleManager::ParticleManager(position start) {
 	Particle newParticle(start,1.0);
 	_particleArr.push_back(newParticle);
 	_avgParticle = newParticle;
 }
 
-ParticleManager::ParticleManager() {
+ParticleManager::ParticleManager(float mapWidth,float mapHeight) {
 
 	// Fill the map with particles
-	for (int i=0;i < MAX_PARTICLES; i++) {
-		Position pos;
+	for (int i=0;i < GeneralService::MAX_PARTICLES; i++) {
+		position pos;
 
 		// Get random position values
-		pos.x = (double)rand()/(RAND_MAX)*(13.75)-(13.75/2);
-		pos.y = (double)rand()/(RAND_MAX)*(9.5)-(9.5/2);
+		pos.x = (double)rand()/(RAND_MAX)*(mapWidth)-(mapWidth/2);
+		pos.y = (double)rand()/(RAND_MAX)*(mapHeight)-(mapHeight/2);
 		int sign = ((rand() % 2) == 0) ? -1 : 1;
 		pos.yaw = (double)rand()/(RAND_MAX)* 2.0 * M_PI * sign;
 
@@ -34,24 +34,25 @@ vector<Particle> ParticleManager::getParticles() {
 	return _particleArr;
 }
 
-void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
-	double dist;
-	int count = 0;
+void ParticleManager::update(position deltaPosition,double* laserArr,Map* map) {
 	vector <Particle> particles_new;
-	Position avgPos = {0,0,0};
+	position avgPos = {0,0,0};
+	int count = 0;
 	float avgWeight = 0;
 
 	for (vector<Particle>::iterator curr = _particleArr.begin(); curr != _particleArr.end(); ++curr) {
 		count++;
+
+		// Update belief of this particle according to the map and movement
 		curr->update(deltaPosition, laserArr, map);
 
 		// Save the particle if its belief isn't too weak
-		if (curr->getBelWeight() > WEAK_BELIEF) {
+		if (curr->getBelWeight() > GeneralService::WEAK_BELIEF) {
 			particles_new.push_back((*curr));
 
 			// Multiply the particle if its belief is strong and there is enough room
-			if ((curr->getBelWeight() > STRONG_BELIEF) &&
-				(particles_new.size() < MAX_PARTICLES - (_particleArr.size() - count) - 2))	{
+			if ((curr->getBelWeight() > GeneralService::STRONG_BELIEF) &&
+				(particles_new.size() < GeneralService::MAX_PARTICLES - (_particleArr.size() - count) - 2))	{
 				particles_new.push_back(Particle(&(*curr)));
 				particles_new.push_back(Particle(&(*curr)));
 			}
@@ -59,27 +60,30 @@ void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 	}
 
 	if (particles_new.size() > 0) {
-		cout << "parts " <<particles_new.size() << endl;
+		// Switch to new particles
+		_particleArr = particles_new;
+
+		// Calculate new average that will be the current location
 		for (vector<Particle>::iterator curr = _particleArr.begin(); curr != _particleArr.end(); ++curr) {
 			avgPos.x+=curr->getBelPos().x;
 			avgPos.y+=curr->getBelPos().y;
 			avgPos.yaw+=curr->getBelPos().yaw;
 			avgWeight+=curr->getBelWeight();
 		}
-		avgPos.x /= (particles_new.size() * 1.0);
-		avgPos.y /= (particles_new.size() * 1.0);
-		avgPos.yaw /= (particles_new.size() * 1.0);
-		avgWeight /= (particles_new.size() * 1.0);
+
+		avgPos.x /= (_particleArr.size() * 1.0);
+		avgPos.y /= (_particleArr.size() * 1.0);
+		avgPos.yaw /= (_particleArr.size() * 1.0);
+		avgWeight /= (_particleArr.size() * 1.0);
+
 		Particle a(avgPos,avgWeight);
 		_avgParticle = a;
-		_particleArr = particles_new;
-	} else {
-		cout << "no parts :(" << endl;
 	}
 }
 
-Particle	ParticleManager::getAvgParticle() {
+Particle ParticleManager::getAvgParticle() {
 	return _avgParticle;
 }
+
 ParticleManager::~ParticleManager() {
 }

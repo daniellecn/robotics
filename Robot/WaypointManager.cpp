@@ -92,7 +92,7 @@ float WaypointManager::angleBetween(locationF a, locationF b) {
 	return (atan2(b.y - a.y,b.x - a.x));
 }
 
-bool WaypointManager::isWaypointReached(Position avgLocation) {
+bool WaypointManager::isWaypointReached(position avgLocation) {
 	//cout << "me : " << avgLocation.x << "," << avgLocation.y << " target : " << _target.x << "," << _target.y << endl;
 	//cout << "distance : " << distanceBetween(_target,avgLocation) << endl;
 	return (distanceBetween(_target,{avgLocation.x,avgLocation.y}) <= REACH_RADIUS);
@@ -112,7 +112,7 @@ locationF WaypointManager::switchToNextWaypoint() {
 	return _target;
 }
 
-void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Map* map) {
+void WaypointManager::turnToWaypoint(position avgLocation,ParticleManager* pm,Map* map) {
 	float angle = (atan2(_target.y - avgLocation.y,_target.x - avgLocation.x));
 	float positiveTargetDeg = (angle * 180 / M_PI);
 	float positiveAvgDeg = (avgLocation.yaw * 180 / M_PI);
@@ -136,7 +136,7 @@ void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Ma
 		}
 		cout << "turn to waypoint : "<< _targetIndex << ": " << _target.x << "," << _target.y << endl;
 	}
-	Position deltas;
+	position deltas;
 	while (fabs(positiveAvgDeg - positiveTargetDeg) > 8) {
 		_robot->read();
 		cout << "evil" << _robot->getXPos() << "," << _robot->getYPos() << "," << _robot->getYaw() << endl;

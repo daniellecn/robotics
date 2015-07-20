@@ -7,7 +7,7 @@
 
 #include "Robot.h"
 
-Robot::Robot(char* ip, int port, Position startPos) {
+Robot::Robot(char* ip, int port, position startPos) {
 	_pc = new PlayerClient(ip,port);
 	_pp = new Position2dProxy(_pc);
 	_lp = new LaserProxy(_pc);
@@ -25,7 +25,7 @@ Robot::Robot(char* ip, int port, Position startPos) {
 	cout << "ODOMETRY" << getXPos() << "," << getYPos() << "," << getYaw() << endl;
 	_currPos = startPos;
 	_addNoise = false;
-	_lastMoveDelta = Position {0,0,0};
+	_lastMoveDelta = position {0,0,0};
 	_obsIndex = 0;
 }
 
@@ -35,11 +35,11 @@ Robot::~Robot() {
 	delete _lp;
 }
 
-Position Robot::getLastMoveDelta() {
+position Robot::getLastMoveDelta() {
 	return _lastMoveDelta;
 }
 
-Position Robot::getCurrPos() {
+position Robot::getCurrPos() {
 	return _currPos;
 }
 
@@ -92,7 +92,7 @@ void Robot::calcDeltas() {
 	float deltaX = calcDeltaX();
 	float deltaY = calcDeltaY();
 	float deltaYaw = calcDeltaYaw();
-	_lastMoveDelta = Position {deltaX,deltaY,deltaYaw};
+	_lastMoveDelta = position {deltaX,deltaY,deltaYaw};
 }
 
 float Robot::calcDeltaX(){
@@ -188,7 +188,8 @@ bool Robot::isForwardFree() {
 	}
 
 	if (minObs < OBSTABLE_MIN_DIST) {
-		cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex] << endl;
+		cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex];
+		cout << endl;
 		_obsIndex = minIndex;
 		return false;
 	}

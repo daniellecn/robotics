@@ -21,8 +21,8 @@ class Robot {
 	PlayerClient* 		_pc;
 	Position2dProxy* 	_pp;
 	LaserProxy* 		_lp;
-	Position 			_currPos;
-	Position 			_lastMoveDelta;
+	position 			_currPos;
+	position 			_lastMoveDelta;
 	double 				_laserArr[LASER_SAMPLES_NUM];
 	bool 				_addNoise;
 	int 				_obsIndex;
@@ -42,7 +42,7 @@ class Robot {
 
 public:
 
-	Robot(char* ip, int port, Position startPos);
+	Robot(char* ip, int port, position startPos);
 	virtual ~Robot();
 
 	int 		getObsIndex();
@@ -51,8 +51,8 @@ public:
 	double 		getYaw();
 	double 		getLaser(int index);
 	double* 	getLaserArr();
-	Position 	getCurrPos();
-	Position 	getLastMoveDelta();
+	position 	getCurrPos();
+	position 	getLastMoveDelta();
 	void 		setAddNoise(bool addNoise);
 	void 		setSpeed(float xSpeed, float angularSpeed);
 

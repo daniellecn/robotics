@@ -8,49 +8,34 @@
 #ifndef PARTICLE_H_
 #define PARTICLE_H_
 
+#include "../GeneralService.h"
 #include "../Laser.h"
 #include "../Map.h"
-#include <libplayerc++/playerc++.h>
-#include <stdlib.h>
-#include <math.h>
-#include <iostream>
-#include "../GeneralService.h"
-
-using namespace std;
 
 class Particle {
 
-	Position 	_belPos;
+	position 	_belPos;
 	float  		_belWeight;
 	int 		_gen;
 
-	static const float MAX_WALK_DIST 	= 0.2;
-	static const float MAX_TURN_DIST 	= 0.5;
-	static const float BIG_ANGLE 		= 0.5;
-	static const float SMALL_ANGLE 		= 0.1;
-	static const float SHORT_DIST 		= 0.2;
-	static const float LONG_DIST 		= 0.7;
-	static const float NORMALIZE_FACTOR = 1.4;
-	static const int   LASER_READ_JUMP  = 10;
-
-	float 	probByMovement(Position deltaPos);
-	float 	probByMeasurements(double* laserArr,Map* map);
-	void 	randomize();
+	float 		probByMovement(position deltaPos);
+	float 		probByMeasurements(double* laserArr,Map* map);
+	void 		randomize();
+	locationF 	relativeObjectLocation(float x,float y,float yaw,double distanceFromObj,int sensorIndex);
 
 public:
 
 	Particle();
 	Particle(Particle* parent);
-	Particle(Position belPos, float belWeight);
+	Particle(position belPos, float belWeight);
 	virtual ~Particle();
 
 	void 		setBelWeight(float belWeight);
-	Position 	getBelPos();
+	position 	getBelPos();
 	float 	 	getBelWeight();
 	int 		getGeneration();
 
-	void 		update(Position deltaPos,double* laserArr,Map* map);
-	locationF 	relativeObjectLocation(float x,float y,float yaw,double distanceFromObj,int sensorIndex);
+	void 		update(position deltaPos,double* laserArr,Map* map);
 };
 
 #endif /* PARTICLE_H_ */

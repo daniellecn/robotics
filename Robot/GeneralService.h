@@ -9,19 +9,22 @@
 #define GENERALSERVICE_H_
 
 #include <string>
+#include <math.h>
+#include <iostream>
+
 using namespace std;
 
-struct location{
+struct location {
 	int x;
 	int y;
 };
 
-struct locationF{
+struct locationF {
 	float x;
 	float y;
 };
 
-struct Position {
+struct position {
 	float x;
 	float y;
 	float yaw;
@@ -98,6 +101,22 @@ public:
 
 	static const float TURN_AND_MOVE_OBSTACLE_RANGE;
 	static const float TURN_ONLY_OBSTACLE_RANGE;
+
+	// Particles
+	static const float MAX_WALK_DISTRIBUTION;
+	static const float MAX_TURN_DISTRIBUTION;
+	static const float BIG_ANGLE;
+	static const float SMALL_ANGLE;
+	static const float SHORT_DIST;
+	static const float LONG_DIST;
+	static const float NORMALIZE_FACTOR;
+	static const int   PARTICLE_LASER_READ_JUMP;
+
+	// Particle Manager
+	static const int   MAX_PARTICLES;
+	static const float STRONG_BELIEF;
+	static const float WEAK_BELIEF;
+
 };
 
 #endif /* GENERALSERVICE_H_ */

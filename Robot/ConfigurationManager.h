@@ -21,7 +21,7 @@ using namespace std;
 class ConfigurationManager {
 private:
 	static string 		_mapPath;
-	static Position 	_startLocation;
+	static position 	_startLocation;
 	static location 	_goal;
 	static robotSize 	_robotSize;
 	static float	 	_mapResolutionCM;
@@ -30,7 +30,7 @@ private:
 	static string getParameter(string paramName);
 public:
 	static string 		getMapPath();
-	static Position 	getStartLocation();
+	static position 	getStartLocation();
 	static location 	getGoal();
 	static robotSize 	getRobotSize();
 	static float 		getMapResolutionCM();
