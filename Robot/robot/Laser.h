@@ -4,7 +4,9 @@
 #include <math.h>
 
 static const int   LASER_SAMPLES_NUM = 666;
-static const int   MIDDLE_LASER_INDEX = 666 / 2;
+static const int   LASER_MIDDLE_INDEX = 666 / 2;
+static const int   LASER_RIGHT_DEG_ANGLE = -50;
+static const int   LASER_LEFT_DEG_ANGLE = 50;
 static const float LASER_RANGE_MIN = 0;
 static const float LASER_RANGE_MAX = 4.095;
 static const float LASER_FOV_DEG = 240;

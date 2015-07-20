@@ -35,8 +35,7 @@ const int GeneralService::P_WHITE = 1;
 const int GeneralService::P_GRAY  = 5;
 const int GeneralService::P_BLACK = 10;
 
-// Real Robot
-
+// Behaviors
 // Meter/Second
 const float GeneralService::STOP_MOVE_SPEED 	= 0;
 const float GeneralService::MIDDLE_MOVE_SPEED 	= 0.2;
@@ -67,3 +66,10 @@ const float GeneralService::NORMALIZE_FACTOR 			= 1.4;
 const int   GeneralService::MAX_PARTICLES 	= 100;
 const float GeneralService::STRONG_BELIEF 	= 0.7;
 const float GeneralService::WEAK_BELIEF 	= 0.3;
+
+// Robot
+const int 	GeneralService::OBSTABLE_LASER_READ_JUMP 	= 1;
+const float GeneralService::OBSTABLE_MIN_DIST 			= 0.65;
+const float GeneralService::FREE_SIDE_DIST				= 0.2;
+const float GeneralService::MAX_WALK_DIST 				= 0.2;
+const float GeneralService::MAX_TURN_DIST 				= 0.1;

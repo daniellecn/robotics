@@ -12,7 +12,7 @@
 #include "GeneralService.h"
 #include "PathPlanner.h"
 #include "localization/ParticleManager.h"
-#include "Robot.h"
+#include "robot/Robot.h"
 #include <vector>
 #include <math.h>
 #include <algorithm>

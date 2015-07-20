@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "Map.h"
-#include "Robot.h"
+#include "robot/Robot.h"
 #include "Manager.h"
 #include "PathPlanner.h"
 #include "WaypointManager.h"

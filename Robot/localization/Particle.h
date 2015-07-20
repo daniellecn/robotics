@@ -9,7 +9,7 @@
 #define PARTICLE_H_
 
 #include "../GeneralService.h"
-#include "../Laser.h"
+#include "../robot/Laser.h"
 #include "../Map.h"
 
 class Particle {

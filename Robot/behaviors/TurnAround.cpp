@@ -12,8 +12,8 @@ TurnAround::TurnAround(Robot* robot):Behavior(robot) {
 
 bool TurnAround::startCondition()
 {
-	if((!(_robot->getObsIndex() > MIDDLE_LASER_INDEX && _robot->isRightFree())) &&
-	   (!(_robot->getObsIndex() < MIDDLE_LASER_INDEX && _robot->isLeftFree())) &&
+	if((!(_robot->getObsIndex() > LASER_MIDDLE_INDEX && _robot->isRightFree())) &&
+	   (!(_robot->getObsIndex() < LASER_MIDDLE_INDEX && _robot->isLeftFree())) &&
 	   (!_robot->isForwardFree()))
 		return true;
 	else

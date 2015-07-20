@@ -117,6 +117,12 @@ public:
 	static const float STRONG_BELIEF;
 	static const float WEAK_BELIEF;
 
+	// Robot
+	static const int 	OBSTABLE_LASER_READ_JUMP;
+	static const float 	OBSTABLE_MIN_DIST;
+	static const float 	FREE_SIDE_DIST;
+	static const float 	MAX_WALK_DIST;
+	static const float 	MAX_TURN_DIST;
 };
 
 #endif /* GENERALSERVICE_H_ */

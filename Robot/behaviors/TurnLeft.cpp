@@ -12,9 +12,7 @@ TurnLeft::TurnLeft(Robot* robot):Behavior(robot) {
 
 bool TurnLeft::startCondition()
 {
-	double obs = _robot->getLaser(_robot->getObsIndex());
-
-	if (_robot->getObsIndex() < MIDDLE_LASER_INDEX && _robot->isLeftFree()) {
+	if (_robot->getObsIndex() < LASER_MIDDLE_INDEX && _robot->isLeftFree()) {
 		return true;
 	}
 

@@ -12,7 +12,7 @@ TurnRight::TurnRight(Robot* robot):Behavior(robot) {
 
 bool TurnRight::startCondition()
 {
-	if(_robot->isRightFree() && _robot->getObsIndex() > MIDDLE_LASER_INDEX) {
+	if(_robot->isRightFree() && _robot->getObsIndex() > LASER_MIDDLE_INDEX) {
 		return true;
 	}
 	else

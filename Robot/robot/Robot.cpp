@@ -21,8 +21,10 @@ Robot::Robot(char* ip, int port, position startPos) {
 		_pp->SetOdometry(startPos.x,startPos.y,startPos.yaw);
 	}
 
+	//  Set and check many times because method is broken
 	_pp->SetOdometry(startPos.x,startPos.y,startPos.yaw);
-	cout << "ODOMETRY" << getXPos() << "," << getYPos() << "," << getYaw() << endl;
+	cout << "ODOMETRY " << getXPos() << "," << getYPos() << "," << getYaw() << endl;
+
 	_currPos = startPos;
 	_addNoise = false;
 	_lastMoveDelta = position {0,0,0};
@@ -57,6 +59,7 @@ double Robot::getYaw() {
 
 double* Robot::getLaserArr() {
 
+	// Save and return current laser state
 	for (int i=0;i < LASER_SAMPLES_NUM;i++) {
 		_laserArr[i] = getLaser(i);
 	}
@@ -65,6 +68,8 @@ double* Robot::getLaserArr() {
 }
 
 double Robot::getLaser(int index) {
+
+	// Return laser read at index
 	if (index < 0 || index > LASER_SAMPLES_NUM) {
 		return -1;
 	}
@@ -99,7 +104,7 @@ float Robot::calcDeltaX(){
 	float x = getXPos();
 
 	if (_addNoise) {
-		x = x + ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST);
+		x = x + ((float(rand()) / float(RAND_MAX)) * GeneralService::MAX_WALK_DIST*2 - GeneralService::MAX_WALK_DIST);
 	}
 
 	float deltaX = x - _currPos.x;
@@ -112,7 +117,7 @@ float Robot::calcDeltaY(){
 	float y = getYPos();
 
 	if (_addNoise) {
-		y = y + ((float(rand()) / float(RAND_MAX)) * MAX_WALK_DIST*2 - MAX_WALK_DIST);
+		y = y + ((float(rand()) / float(RAND_MAX)) * GeneralService::MAX_WALK_DIST*2 - GeneralService::MAX_WALK_DIST);
 	}
 	float deltaY = y - _currPos.y;
 	_currPos.y = y;
@@ -124,7 +129,7 @@ float Robot::calcDeltaYaw(){
 	float yaw = getYaw();
 
 	if (_addNoise) {
-		yaw = yaw + ((float(rand()) / float(RAND_MAX)) * MAX_TURN_DIST*2 - MAX_TURN_DIST);
+		yaw = yaw + ((float(rand()) / float(RAND_MAX)) * GeneralService::MAX_TURN_DIST*2 - GeneralService::MAX_TURN_DIST);
 	}
 
 	float delYaw = yaw - _currPos.yaw;
@@ -142,7 +147,7 @@ bool Robot::isLeftMoreFree() {
 
 	for (int i = LASER_ANGLE_TO_INDEX_DEG(90), j = LASER_ANGLE_TO_INDEX_DEG(-90);
 			 i < LASER_ANGLE_TO_INDEX_DEG(47) && j > LASER_ANGLE_TO_INDEX_DEG(-47);
-			 i += LASER_READ_JUMP, j-=LASER_READ_JUMP) {
+			 i += GeneralService::OBSTABLE_LASER_READ_JUMP, j-=GeneralService::OBSTABLE_LASER_READ_JUMP) {
 
 		if ((*_lp)[i] < 0.3) {
 			left+=(*_lp)[i];
@@ -158,7 +163,7 @@ bool Robot::isLeftMoreFree() {
 }
 
 bool Robot::isRightFree() {
-	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(-50)] > 0.2)
+	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(LASER_RIGHT_DEG_ANGLE)] > GeneralService::FREE_SIDE_DIST)
 		return true;
 	else
 		return false;
@@ -166,29 +171,28 @@ bool Robot::isRightFree() {
 
 bool Robot::isLeftFree() {
 
-	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(50)] > 0.2)
+	if ((*_lp)[LASER_ANGLE_TO_INDEX_DEG(LASER_LEFT_DEG_ANGLE)] > GeneralService::FREE_SIDE_DIST)
 		return true;
 	else
 		return false;
 }
 
 bool Robot::isForwardFree() {
-
-	float visualRadAngle = getVisualAngle(OBSTABLE_MIN_DIST,X_SIZE_METER);
+	float visualRadAngle = getVisualAngle(GeneralService::OBSTABLE_MIN_DIST,ConfigurationManager::getRobotSize().width);
 	int angleLaserAddition = (visualRadAngle / LASER_ANGULAR_RESOLUTION_RAD) ;
-	float minObs = 4, minIndex = 0;
+	float minObs = LASER_RANGE_MAX, minIndex = 0;
 
-	for (int i = FORWARD_LASER_INDEX - (angleLaserAddition/2);
-			 i < FORWARD_LASER_INDEX + (angleLaserAddition/2);
-			 i += LASER_READ_JUMP) {
-		if ((*_lp)[i] < OBSTABLE_MIN_DIST && (*_lp)[i] < minObs) {
+	for (int i = LASER_MIDDLE_INDEX - (angleLaserAddition/2);
+			 i < LASER_MIDDLE_INDEX + (angleLaserAddition/2);
+			 i += GeneralService::OBSTABLE_LASER_READ_JUMP) {
+		if ((*_lp)[i] < GeneralService::OBSTABLE_MIN_DIST && (*_lp)[i] < minObs) {
 			minObs = (*_lp)[i];
-			minIndex =i;
+			minIndex = i;
 		}
 	}
 
-	if (minObs < OBSTABLE_MIN_DIST) {
-		cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex];
+	if (minObs < GeneralService::OBSTABLE_MIN_DIST) {
+		cout << "OBSTACLE at index: " << minIndex << " distance :" << (*_lp)[minIndex];
 		cout << endl;
 		_obsIndex = minIndex;
 		return false;

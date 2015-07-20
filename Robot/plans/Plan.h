@@ -9,7 +9,7 @@
 #define PLAN_H_
 
 #include "../behaviors/Behavior.h"
-#include "../Robot.h"
+#include "../robot/Robot.h"
 
 class Plan {
 
