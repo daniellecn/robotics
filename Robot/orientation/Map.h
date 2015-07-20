@@ -8,8 +8,8 @@
 #ifndef MAP_H_
 #define MAP_H_
 
-#include "GeneralService.h"
-#include "ConfigurationManager.h"
+#include "../GeneralService.h"
+#include "../ConfigurationManager.h"
 #include "pngUtil.h"
 #include "lodepng.h"
 

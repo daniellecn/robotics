@@ -123,6 +123,11 @@ public:
 	static const float 	FREE_SIDE_DIST;
 	static const float 	MAX_WALK_DIST;
 	static const float 	MAX_TURN_DIST;
+
+	// Waypoints
+	static const float  REACH_RADIUS;
+	static const float  MAX_ANGLE_DIFF;
+	static const float  TURN_TO_ANGLE;
 };
 
 #endif /* GENERALSERVICE_H_ */

@@ -55,7 +55,7 @@ const float GeneralService::TURN_ONLY_OBSTACLE_RANGE 		= 0.5;
 // Particles
 const int   GeneralService::PARTICLE_LASER_READ_JUMP  	= 10;
 const float GeneralService::MAX_WALK_DISTRIBUTION 		= 0.2;
-const float GeneralService::MAX_TURN_DISTRIBUTION 		= 0.5;
+const float GeneralService::MAX_TURN_DISTRIBUTION 		= 1;
 const float GeneralService::BIG_ANGLE 					= 0.5;
 const float GeneralService::SMALL_ANGLE 				= 0.1;
 const float GeneralService::SHORT_DIST 					= 0.2;
@@ -69,7 +69,12 @@ const float GeneralService::WEAK_BELIEF 	= 0.3;
 
 // Robot
 const int 	GeneralService::OBSTABLE_LASER_READ_JUMP 	= 1;
-const float GeneralService::OBSTABLE_MIN_DIST 			= 0.65;
+const float GeneralService::OBSTABLE_MIN_DIST 			= 0.25;
 const float GeneralService::FREE_SIDE_DIST				= 0.2;
 const float GeneralService::MAX_WALK_DIST 				= 0.2;
 const float GeneralService::MAX_TURN_DIST 				= 0.1;
+
+// Waypoints
+const float  GeneralService::REACH_RADIUS 	= 0.2;
+const float  GeneralService::MAX_ANGLE_DIFF = 8;
+const float  GeneralService::TURN_TO_ANGLE 	= 20;

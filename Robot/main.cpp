@@ -5,23 +5,23 @@
  *      Author: colman
  */
 
-#include <libplayerc++/playerc++.h>
 #include <iostream>
 
-#include "Map.h"
+#include "orientation/Map.h"
 #include "robot/Robot.h"
 #include "Manager.h"
-#include "PathPlanner.h"
-#include "WaypointManager.h"
+#include "orientation/PathPlanner.h"
 #include "plans/PlnObstacleAvoid.h"
+
 using namespace std;
-using namespace PlayerCc;
 
 int main() {
 	int resolution = ConfigurationManager::getGridResolutionCM() /
 			ConfigurationManager::getMapResolutionCM();
 
 	// Read config
+	//position start = ConfigurationManager::getStartLocation();
+	//start.yaw = dtor(start.yaw);
 	position start = {2.10,-2.9,dtor(20)};
 
 	// Init and start classes
@@ -41,8 +41,7 @@ int main() {
 	Manager manager(&robot, &map, &plan, &path);
 	manager.run();
 
-	return 0;
-
+	cout << "Goodbye" << endl;
 }
 
 

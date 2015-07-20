@@ -10,7 +10,7 @@
 
 #include "../GeneralService.h"
 #include "../robot/Laser.h"
-#include "../Map.h"
+#include "../orientation/Map.h"
 
 class Particle {
 

@@ -9,13 +9,11 @@
 #define MANAGER_H_
 
 #include "robot/Robot.h"
-#include "PathPlanner.h"
-#include "WaypointManager.h"
 #include "plans/Plan.h"
 #include "localization/ParticleManager.h"
+#include "orientation/PathPlanner.h"
+#include "orientation/WaypointManager.h"
 #include <vector>
-
-using namespace std;
 
 class Manager {
 	Behavior* 			_curr;
