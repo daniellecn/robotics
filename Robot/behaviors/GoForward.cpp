@@ -28,8 +28,7 @@ bool GoForward::stopCondition()
 
 void GoForward::action()
 {
-	//_robot->setSpeed(0.2, 0.0);
-	_robot->setSpeed(0.2, 0.0);
+	_robot->setSpeed(GeneralService::MIDDLE_MOVE_SPEED, dtor(GeneralService::STOP_TURN_ANGLE));
 }
 
 void GoForward::print()

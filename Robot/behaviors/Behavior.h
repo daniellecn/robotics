@@ -9,8 +9,7 @@
 #define BEHAVIOR_H_
 
 #include "../Robot.h"
-
-using namespace std;
+#include "../GeneralService.h"
 
 class Behavior {
 

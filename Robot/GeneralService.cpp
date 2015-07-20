@@ -34,3 +34,18 @@ const unsigned char GeneralService::C_ORANGE = 128;
 const int GeneralService::P_WHITE = 1;
 const int GeneralService::P_GRAY  = 5;
 const int GeneralService::P_BLACK = 10;
+
+// Real Robot
+const float GeneralService::STOP_MOVE_SPEED = 0;
+const float GeneralService::MIDDLE_MOVE_SPEED = 0.2;
+const float GeneralService::SLOW_MOVE_SPEED = 0.1;
+
+const float GeneralService::STOP_TURN_ANGLE = 0;
+const float GeneralService::SLOW_TURN_ANGLE = 10;
+const float GeneralService::MIDDLE_TURN_ANGLE = 30;
+const float GeneralService::FAST_TURN_ANGLE = 60;
+const float GeneralService::FULL_TURN_ANGLE = 100;
+
+
+const float GeneralService::TURN_AND_MOVE_OBSTACLE_RANGE = 1;
+const float GeneralService::TURN_ONLY_OBSTACLE_RANGE = 0.5;

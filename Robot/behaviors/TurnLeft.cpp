@@ -14,20 +14,9 @@ bool TurnLeft::startCondition()
 {
 	double obs = _robot->getLaser(_robot->getObsIndex());
 
-	if (_robot->getObsIndex() < 333 && _robot->isLeftFree()) {
+	if (_robot->getObsIndex() < MIDDLE_LASER_INDEX && _robot->isLeftFree()) {
 		return true;
 	}
-/*
-	// If far away and on the right
-	if (obs > 1 && _robot->getObsIndex() < 333) {
-		return true;
-	// If midway on the right and there is more space on the left
-	} else if (obs > 0.5 && _robot->getObsIndex() < 333 && (_robot->isLeftMoreFree())) {
-		return true;
-	// If very close on the right and left is free
-	} else if (obs < 0.5 && _robot->isLeftFree() && _robot->getObsIndex() < 333) {
-		return true;
-	}*/
 
 	return false;
 }
@@ -42,23 +31,16 @@ bool TurnLeft::stopCondition()
 
 void TurnLeft::action()
 {
-/*	double obs = _robot->getLaser(_robot->getObsIndex());
-	if (obs > 1) {
-		_robot->setSpeed(0.5, dtor(40));
-	} else if (obs > 0.6) {
-		_robot->setSpeed(0.3, dtor(60));
-	} else {
-		_robot->setSpeed(0.0, dtor(90));
-	}*/
-
 	double obs = _robot->getLaser(_robot->getObsIndex());
 
-	if (obs > 1) {
-		_robot->setSpeed(0.2, dtor(10));
-	} else if (obs > 0.5) {
-		_robot->setSpeed(0.1, dtor(30));
-	} else {
-		_robot->setSpeed(0.0, dtor(60));
+	if (obs > GeneralService::TURN_AND_MOVE_OBSTACLE_RANGE) {
+		_robot->setSpeed(GeneralService::MIDDLE_MOVE_SPEED, dtor(GeneralService::SLOW_TURN_ANGLE));
+	}
+	else if (obs > GeneralService::TURN_ONLY_OBSTACLE_RANGE) {
+		_robot->setSpeed(GeneralService::SLOW_MOVE_SPEED, dtor(GeneralService::MIDDLE_TURN_ANGLE));
+	}
+	else {
+		_robot->setSpeed(GeneralService::STOP_MOVE_SPEED, dtor(GeneralService::FAST_TURN_ANGLE));
 	}
 }
 

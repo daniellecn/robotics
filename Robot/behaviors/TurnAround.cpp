@@ -12,8 +12,8 @@ TurnAround::TurnAround(Robot* robot):Behavior(robot) {
 
 bool TurnAround::startCondition()
 {
-	if((!(_robot->getObsIndex() > 333 && _robot->isRightFree())) &&
-	   (!(_robot->getObsIndex() < 333 && _robot->isLeftFree())) &&
+	if((!(_robot->getObsIndex() > MIDDLE_LASER_INDEX && _robot->isRightFree())) &&
+	   (!(_robot->getObsIndex() < MIDDLE_LASER_INDEX && _robot->isLeftFree())) &&
 	   (!_robot->isForwardFree()))
 		return true;
 	else
@@ -30,7 +30,7 @@ bool TurnAround::stopCondition()
 
 void TurnAround::action()
 {
-	_robot->setSpeed(0.0, 2.0);
+	_robot->setSpeed(GeneralService::STOP_MOVE_SPEED, dtor(GeneralService::FULL_TURN_ANGLE));
 }
 
 void TurnAround::print()

@@ -84,6 +84,20 @@ public:
 	static const int P_BLACK;
 	static const int P_GRAY;
 	static const int P_WHITE;
+
+	// Real Robot
+	static const float STOP_MOVE_SPEED;
+	static const float MIDDLE_MOVE_SPEED;
+	static const float SLOW_MOVE_SPEED;
+
+	static const float STOP_TURN_ANGLE;
+	static const float SLOW_TURN_ANGLE;
+	static const float MIDDLE_TURN_ANGLE;
+	static const float FAST_TURN_ANGLE;
+	static const float FULL_TURN_ANGLE;
+
+	static const float TURN_AND_MOVE_OBSTACLE_RANGE;
+	static const float TURN_ONLY_OBSTACLE_RANGE;
 };
 
 #endif /* GENERALSERVICE_H_ */
