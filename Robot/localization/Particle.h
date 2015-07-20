@@ -25,7 +25,7 @@ class Particle {
 	int 		_gen;
 
 	static const float MAX_WALK_DIST 	= 0.2;
-	static const float MAX_TURN_DIST 	= 0.1;
+	static const float MAX_TURN_DIST 	= 0.5;
 	static const float BIG_ANGLE 		= 0.5;
 	static const float SMALL_ANGLE 		= 0.1;
 	static const float SHORT_DIST 		= 0.2;

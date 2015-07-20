@@ -29,12 +29,11 @@ void Manager::run() {
 	if (_curr->startCondition() == false)
 		_curr = _curr->selectNext();
 	// Stop when the last waypoint is reached
-	while((!_wm->isLastWaypoint()) &&
-		  (!_wm->isWaypointReached(_pm->getAvgParticle().getBelPos()))) {
+	while(!_wm->isLastWaypoint()) {
 
 		while (!_wm->isWaypointReached(_pm->getAvgParticle().getBelPos())) {
 			if (_robot->isForwardFree()) {
-				_wm->turnToWaypoint(_pm->getAvgParticle().getBelPos(),_pm,_map);
+				_wm->turnToWaypoint(_robot->getCurrPos(),_pm,_map);
 			}
 			_curr->action();
 			_curr->print();
@@ -67,8 +66,8 @@ void Manager::run() {
 			_robot->calcDeltas();
 				}*/
 		}
-		cout << "me dd : " << _robot->getXPos() << "," << _robot->getYPos() << endl;
-		cout << "before switch me : " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << " target : " << target.x << "," << target.y ;
+		cout << "me dd : " << _robot->getXPos() << "," << _robot->getYPos() << "," << _robot->getYaw()<< endl;
+		cout << "before switch me : " << _robot->getCurrPos().x << "," << _robot->getCurrPos().y << ","<< _robot->getCurrPos().yaw << "target : " << target.x << "," << target.y << endl;
 		cout << " distance " << sqrt(pow(_robot->getCurrPos().x - target.x,2) + pow(_robot->getCurrPos().y - target.y,2)) << endl;
 		//_path->getGrid()[_map->yPosToIndexLocal(target.y *100)][_map->xPosToIndexLocal(target.x*100)].color = GeneralService::C_PURPLE;
 		target=_wm->switchToNextWaypoint();

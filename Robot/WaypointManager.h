@@ -20,7 +20,7 @@ using namespace std;
 
 class WaypointManager {
 private:
-	static const float REACH_RADIUS = 0.20;
+	static const float REACH_RADIUS = 0.2;
 
 	vector <locationF> 	_wayPointPool;
 	int 				_targetIndex;

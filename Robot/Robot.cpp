@@ -18,8 +18,10 @@ Robot::Robot(char* ip, int port, Position startPos) {
 	//For fixing Player's reading BUG
 	for(int i=0;i<15;i++) {
 		_pc->Read();
+		_pp->SetOdometry(startPos.x,startPos.y,startPos.yaw);
 	}
 
+	_pp->SetOdometry(startPos.x,startPos.y,startPos.yaw);
 	cout << "ODOMETRY" << getXPos() << "," << getYPos() << "," << getYaw() << endl;
 	_currPos = startPos;
 	_addNoise = false;
@@ -186,7 +188,7 @@ bool Robot::isForwardFree() {
 	}
 
 	if (minObs < OBSTABLE_MIN_DIST) {
-		//cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex] << endl;
+		cout << "OBS i-" << minIndex << " " << (*_lp)[minIndex] << endl;
 		_obsIndex = minIndex;
 		return false;
 	}

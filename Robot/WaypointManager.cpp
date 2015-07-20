@@ -99,7 +99,7 @@ bool WaypointManager::isWaypointReached(Position avgLocation) {
 }
 
 bool WaypointManager::isLastWaypoint() {
-	return (this->getWayPointPool().size() == _targetIndex + 1);
+	return (this->getWayPointPool().size() == _targetIndex);
 }
 
 locationF WaypointManager::switchToNextWaypoint() {
@@ -117,31 +117,41 @@ void WaypointManager::turnToWaypoint(Position avgLocation,ParticleManager* pm,Ma
 	float positiveTargetDeg = (angle * 180 / M_PI);
 	float positiveAvgDeg = (avgLocation.yaw * 180 / M_PI);
 	if (angle < 0) {
-		positiveTargetDeg = 360 + (angle * 180 / M_PI);
+		positiveTargetDeg = 360 + positiveTargetDeg;
 	}
 	if (avgLocation.yaw < 0) {
 		positiveAvgDeg = 360 + positiveAvgDeg;
 	}
-
 	// If robot angle is not correct
-	if (fabs(avgLocation.yaw - angle) > dtor(8)) {
-
+	if (fabs(positiveAvgDeg - positiveTargetDeg) > 8) {
+		cout << "efresh " << abs(positiveAvgDeg - positiveTargetDeg) << endl;
   		if (positiveAvgDeg < positiveTargetDeg) {
-			_robot->setSpeed(0,dtor(40));
+			_robot->setSpeed(0,dtor(20));
+			//cout << "left mine: " << avgLocation.yaw << " target: " << angle<< endl;
 			cout << "left mine: " << avgLocation.yaw * 180 / M_PI<< " target: " << angle * 180 / M_PI<< endl;
 		} else {
-			_robot->setSpeed(0,dtor(-40));
-			cout << "right mine: " << avgLocation.yaw * 180 / M_PI<< " target: " << angle * 180 / M_PI<< endl;
+			_robot->setSpeed(0,dtor(-20));
+			//cout << "right mine: " << avgLocation.yaw << " target: " << angle<< endl;
+			cout << "right mine: " << positiveAvgDeg<< " target: " << positiveTargetDeg<< endl;
 		}
 		cout << "turn to waypoint : "<< _targetIndex << ": " << _target.x << "," << _target.y << endl;
 	}
 	Position deltas;
-	while (fabs(pm->getAvgParticle().getBelPos().yaw - angle) > dtor(8)) {
+	while (fabs(positiveAvgDeg - positiveTargetDeg) > 8) {
 		_robot->read();
+		cout << "evil" << _robot->getXPos() << "," << _robot->getYPos() << "," << _robot->getYaw() << endl;
+		//cout << "efresh np abs " << (positiveAvgDeg - positiveTargetDeg) << endl;
+		cout << "efresh " << fabs(positiveAvgDeg - positiveTargetDeg) << endl;
+		//cout << "my angle " << pm->getAvgParticle().getBelPos().yaw  << endl;
+		cout << "my angle " << positiveAvgDeg << endl;
 		_robot->calcDeltas();
 		deltas = _robot->getLastMoveDelta();
 		if (deltas.x != 0 || deltas.y != 0 || deltas.yaw != 0) {
 			pm->update(deltas,_robot->getLaserArr(),map);
+		}
+		positiveAvgDeg = pm->getAvgParticle().getBelPos().yaw * 180 / M_PI;
+		if (positiveAvgDeg < 0) {
+			positiveAvgDeg = 360 + positiveAvgDeg;
 		}
 	}
 

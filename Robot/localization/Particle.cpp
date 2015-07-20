@@ -124,6 +124,7 @@ float Particle::probByMeasurements(double* laserArr,Map* map) {
 				miss++;
 			}
 		}
+		//cout << "white hit" << hit << " miss " << miss << endl;
 
 		// Check if laser found obstacle
 		if (laserArr[i] < LASER_RANGE_MAX) {
@@ -141,8 +142,9 @@ float Particle::probByMeasurements(double* laserArr,Map* map) {
 				miss++;
 			}
 		}
+			//cout << "black hit" << hit << " miss " << miss << endl;
 	}
-
+	cout << " hit" << hit << " miss " << miss << endl;
 	return (hit / (hit + miss));
 }
 

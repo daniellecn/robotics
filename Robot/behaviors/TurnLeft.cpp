@@ -55,10 +55,10 @@ void TurnLeft::action()
 
 	if (obs > 1) {
 		_robot->setSpeed(0.2, dtor(10));
-	} else if (obs >= 0.3) {
+	} else if (obs > 0.5) {
 		_robot->setSpeed(0.1, dtor(30));
 	} else {
-		_robot->setSpeed(0.0, dtor(90));
+		_robot->setSpeed(0.0, dtor(60));
 	}
 }
 

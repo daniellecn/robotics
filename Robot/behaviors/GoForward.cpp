@@ -29,7 +29,7 @@ bool GoForward::stopCondition()
 void GoForward::action()
 {
 	//_robot->setSpeed(0.2, 0.0);
-	_robot->setSpeed(0.5, 0.0);
+	_robot->setSpeed(0.2, 0.0);
 }
 
 void GoForward::print()

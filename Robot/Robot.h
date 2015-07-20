@@ -29,7 +29,7 @@ class Robot {
 
 	static const int 	LASER_READ_JUMP 	= 1;
 	static const int   	FORWARD_LASER_INDEX = 333;
-	static const float 	OBSTABLE_MIN_DIST 	= 0.5;
+	static const float 	OBSTABLE_MIN_DIST 	= 0.65;
 	static const float 	X_SIZE_METER 		= 0.35;
 	static const float 	Y_SIZE_METER 		= 0.45;
 	static const float 	MAX_WALK_DIST 		= 0.2;

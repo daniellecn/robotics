@@ -26,6 +26,7 @@ void Behavior::addNext(Behavior* beh)
 	_behArr=tmp;
 	_size++;
 }
+
 Behavior* Behavior::selectNext()
 {
 	int i;

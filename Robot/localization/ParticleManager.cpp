@@ -59,6 +59,7 @@ void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 	}
 
 	if (particles_new.size() > 0) {
+		cout << "parts " <<particles_new.size() << endl;
 		for (vector<Particle>::iterator curr = _particleArr.begin(); curr != _particleArr.end(); ++curr) {
 			avgPos.x+=curr->getBelPos().x;
 			avgPos.y+=curr->getBelPos().y;
@@ -72,6 +73,8 @@ void ParticleManager::update(Position deltaPosition,double* laserArr,Map* map) {
 		Particle a(avgPos,avgWeight);
 		_avgParticle = a;
 		_particleArr = particles_new;
+	} else {
+		cout << "no parts :(" << endl;
 	}
 }
 
