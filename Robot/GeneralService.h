@@ -88,6 +88,9 @@ public:
 	static const int P_GRAY;
 	static const int P_WHITE;
 
+	// Map
+	static const float BLOW_PIXELS;
+
 	// Real Robot
 	static const float STOP_MOVE_SPEED;
 	static const float MIDDLE_MOVE_SPEED;

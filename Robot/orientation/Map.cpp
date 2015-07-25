@@ -248,8 +248,8 @@ void Map::blowMap(std::vector<unsigned char> map, int widthMap, int heightMap, i
 
 				// Blow the pixel in two levels
 
-				this->setBlowMap(yBlow - 2*this->getNumPixelsToBlow(), yBlow + 2*this->getNumPixelsToBlow(),
-								 xBlow - 2*this->getNumPixelsToBlow(), xBlow + 2*this->getNumPixelsToBlow(),
+				this->setBlowMap(yBlow - GeneralService::BLOW_PIXELS*this->getNumPixelsToBlow(), yBlow + GeneralService::BLOW_PIXELS*this->getNumPixelsToBlow(),
+								 xBlow - GeneralService::BLOW_PIXELS*this->getNumPixelsToBlow(), xBlow + GeneralService::BLOW_PIXELS*this->getNumPixelsToBlow(),
 								 GeneralService::C_GRAY);
 
 				this->setBlowMap(yBlow - this->getNumPixelsToBlow(), yBlow + this->getNumPixelsToBlow(),

@@ -32,8 +32,11 @@ const unsigned char GeneralService::C_ORANGE = 128;
 
 //priorities
 const int GeneralService::P_WHITE = 1;
-const int GeneralService::P_GRAY  = 5;
+const int GeneralService::P_GRAY  = 15;
 const int GeneralService::P_BLACK = 10;
+
+// Map
+const float GeneralService::BLOW_PIXELS = 2.5;
 
 // Behaviors
 // Meter/Second
@@ -69,7 +72,7 @@ const float GeneralService::WEAK_BELIEF 	= 0.3;
 
 // Robot
 const int 	GeneralService::OBSTABLE_LASER_READ_JUMP 	= 1;
-const float GeneralService::OBSTABLE_MIN_DIST 			= 0.25;
+const float GeneralService::OBSTABLE_MIN_DIST 			= 0.2;
 const float GeneralService::FREE_SIDE_DIST				= 0.2;
 const float GeneralService::MAX_WALK_DIST 				= 0.2;
 const float GeneralService::MAX_TURN_DIST 				= 0.1;

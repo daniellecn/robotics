@@ -19,9 +19,6 @@ int main() {
 	int resolution = ConfigurationManager::getGridResolutionCM() /
 			ConfigurationManager::getMapResolutionCM();
 
-	// Read config
-	//position start = ConfigurationManager::getStartLocation();
-	//start.yaw = dtor(start.yaw);
 	position start = {2.10,-2.9,dtor(20)};
 
 	// Init and start classes
@@ -33,9 +30,10 @@ int main() {
 			ConfigurationManager::getGoal().x / resolution,
 			ConfigurationManager::getGoal().y / resolution);
 
-	//Robot robot("10.10.245.65", 6665, start);
-	Robot robot("localhost", 6665, start);
-	//robot.setAddNoise(true);
+
+	Robot robot("10.10.245.65", 6665, start);
+	//Robot robot("localhost", 6665, start);
+	//robot.setAddNoise(true);d
 
 	PlnObstacleAvoid plan(&robot);
 	Manager manager(&robot, &map, &plan, &path);
